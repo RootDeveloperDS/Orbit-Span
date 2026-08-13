@@ -1,0 +1,11 @@
+{
+  "name": "OrbitScale — Solar System scale & gravity",
+  "short_name": "OrbitScale",
+  "description": "Explore real planetary positions, human-scale distances and the actual gravitational pull of the planets on you.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#080c17",
+  "theme_color": "#080c17",
+  "icons": [{ "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }]
+}
