@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GravityLabRouteImport } from './routes/gravity-lab'
 import { Route as HumanScaleRouteImport } from './routes/human-scale'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as SourcesRouteImport } from './routes/sources'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +30,53 @@ const HumanScaleRoute = HumanScaleRouteImport.update({
   path: '/human-scale',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/gravity-lab': typeof GravityLabRoute
   '/human-scale': typeof HumanScaleRoute
+  '/learn': typeof LearnRoute
+  '/sources': typeof SourcesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/gravity-lab': typeof GravityLabRoute
   '/human-scale': typeof HumanScaleRoute
+  '/learn': typeof LearnRoute
+  '/sources': typeof SourcesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/gravity-lab': typeof GravityLabRoute
   '/human-scale': typeof HumanScaleRoute
+  '/learn': typeof LearnRoute
+  '/sources': typeof SourcesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/gravity-lab' | '/human-scale'
+  fullPaths: '/' | '/gravity-lab' | '/human-scale' | '/learn' | '/sources'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/gravity-lab' | '/human-scale'
-  id: '__root__' | '/' | '/gravity-lab' | '/human-scale'
+  to: '/' | '/gravity-lab' | '/human-scale' | '/learn' | '/sources'
+  id: '__root__' | '/' | '/gravity-lab' | '/human-scale' | '/learn' | '/sources'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GravityLabRoute: typeof GravityLabRoute
   HumanScaleRoute: typeof HumanScaleRoute
+  LearnRoute: typeof LearnRoute
+  SourcesRoute: typeof SourcesRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +102,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HumanScaleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +123,8 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GravityLabRoute: GravityLabRoute,
   HumanScaleRoute: HumanScaleRoute,
+  LearnRoute: LearnRoute,
+  SourcesRoute: SourcesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
