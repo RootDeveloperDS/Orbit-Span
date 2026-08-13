@@ -10,33 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GravityLabRouteImport } from './routes/gravity-lab'
+import { Route as HumanScaleRouteImport } from './routes/human-scale'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GravityLabRoute = GravityLabRouteImport.update({
+  id: '/gravity-lab',
+  path: '/gravity-lab',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HumanScaleRoute = HumanScaleRouteImport.update({
+  id: '/human-scale',
+  path: '/human-scale',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/gravity-lab': typeof GravityLabRoute
+  '/human-scale': typeof HumanScaleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/gravity-lab': typeof GravityLabRoute
+  '/human-scale': typeof HumanScaleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/gravity-lab': typeof GravityLabRoute
+  '/human-scale': typeof HumanScaleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/gravity-lab' | '/human-scale'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/gravity-lab' | '/human-scale'
+  id: '__root__' | '/' | '/gravity-lab' | '/human-scale'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GravityLabRoute: typeof GravityLabRoute
+  HumanScaleRoute: typeof HumanScaleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +68,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/gravity-lab': {
+      id: '/gravity-lab'
+      path: '/gravity-lab'
+      fullPath: '/gravity-lab'
+      preLoaderRoute: typeof GravityLabRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/human-scale': {
+      id: '/human-scale'
+      path: '/human-scale'
+      fullPath: '/human-scale'
+      preLoaderRoute: typeof HumanScaleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GravityLabRoute: GravityLabRoute,
+  HumanScaleRoute: HumanScaleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

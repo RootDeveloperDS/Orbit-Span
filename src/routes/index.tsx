@@ -1,24 +1,77 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { BodyReadout } from "@/components/orbit/BodyReadout";
+import { BodySelector } from "@/components/orbit/BodySelector";
+import { ModeSwitch } from "@/components/orbit/ModeSwitch";
+import { TimeControls } from "@/components/orbit/TimeControls";
+import { SceneHost } from "@/components/orbit/scene/SceneHost";
+import { useSolarSystemState } from "@/hooks/useSolarSystemState";
+import { useOrbitStore } from "@/store/useOrbitStore";
+
+const TITLE = "OrbitScale — Solar System scale & real planetary positions";
+const DESCRIPTION =
+  "Explore an interactive 3D Solar System with real calculated planetary positions, true-scale distances and the gravitational pull each planet has on you.";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: TITLE },
+      { name: "description", content: DESCRIPTION },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESCRIPTION },
+    ],
+  }),
+  component: ExplorerPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function ModeNotice() {
+  const viewMode = useOrbitStore((s) => s.viewMode);
+  if (viewMode === "exploration") {
+    return (
+      <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
+        Exploration mode: planet sizes are visually exaggerated and distances compressed for
+        readability.
+      </p>
+    );
+  }
+  if (viewMode === "scientific") {
+    return (
+      <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
+        Scientific mode: true relative sizes and distances. At this scale the planets are almost
+        invisible specks — that is the honest picture of the Solar System.
+      </p>
+    );
+  }
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
+      Human-scale mode: the 3D view keeps a readable layout. Open{" "}
+      <span className="text-primary">Human Scale</span> for the measured model distances.
+    </p>
+  );
+}
+
+function ExplorerPage() {
+  const state = useSolarSystemState();
+
+  return (
+    <div className="relative flex flex-col lg:h-[calc(100vh-3.5rem-5.5rem)] lg:flex-row">
+      <div className="relative h-[52vh] min-h-[320px] w-full border-b border-border/60 lg:h-full lg:flex-1 lg:border-b-0">
+        <SceneHost />
+        <div className="pointer-events-none absolute top-3 left-3 max-w-xs">
+          <ModeNotice />
+        </div>
+        <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+          Drag to orbit · scroll to zoom · tap a body to focus
+        </p>
+      </div>
+
+      <aside className="w-full shrink-0 space-y-3 overflow-y-auto p-3 lg:w-[380px] lg:border-l lg:border-border/60">
+        <h1 className="px-1 text-xl font-semibold">Solar System Explorer</h1>
+        <ModeSwitch />
+        <TimeControls />
+        <BodySelector />
+        <BodyReadout state={state} />
+      </aside>
     </div>
   );
 }

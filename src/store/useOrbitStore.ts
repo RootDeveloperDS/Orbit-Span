@@ -1,0 +1,61 @@
+import { create } from "zustand";
+
+import type { BodyId } from "@/lib/orbit/constants";
+import type { EarthReferencePreset } from "@/lib/orbit/scale";
+
+export type ViewMode = "scientific" | "exploration" | "human";
+
+export interface OrbitState {
+  /** Canonical simulation instant, UTC milliseconds. */
+  epochMs: number;
+  /** Simulated seconds per real second. 0 = paused. */
+  playbackRate: number;
+  viewMode: ViewMode;
+  selectedBody: BodyId;
+  observerMassKg: number;
+  earthReference: EarthReferencePreset;
+  /** Custom Earth reference diameter in metres (used when earthReference === "custom"). */
+  customEarthDiameterM: number;
+  /** Reduced-effects / low-power rendering. */
+  performanceMode: boolean;
+  setEpochMs: (ms: number) => void;
+  advance: (deltaSimSeconds: number) => void;
+  now: () => void;
+  setPlaybackRate: (rate: number) => void;
+  setViewMode: (mode: ViewMode) => void;
+  selectBody: (id: BodyId) => void;
+  setObserverMassKg: (kg: number) => void;
+  setEarthReference: (ref: EarthReferencePreset) => void;
+  setCustomEarthDiameterM: (m: number) => void;
+  setPerformanceMode: (on: boolean) => void;
+}
+
+export const PLAYBACK_RATES: readonly { label: string; value: number }[] = [
+  { label: "Paused", value: 0 },
+  { label: "1 h/s", value: 3600 },
+  { label: "1 d/s", value: 86400 },
+  { label: "1 wk/s", value: 604800 },
+  { label: "1 mo/s", value: 2592000 },
+  { label: "1 yr/s", value: 31557600 },
+];
+
+export const useOrbitStore = create<OrbitState>((set) => ({
+  epochMs: Date.UTC(2026, 0, 1, 12, 0, 0),
+  playbackRate: 0,
+  viewMode: "exploration",
+  selectedBody: "jupiter",
+  observerMassKg: 70,
+  earthReference: "10cm",
+  customEarthDiameterM: 0.15,
+  performanceMode: false,
+  setEpochMs: (ms) => set({ epochMs: ms }),
+  advance: (deltaSimSeconds) => set((s) => ({ epochMs: s.epochMs + deltaSimSeconds * 1000 })),
+  now: () => set({ epochMs: Date.now() }),
+  setPlaybackRate: (rate) => set({ playbackRate: rate }),
+  setViewMode: (mode) => set({ viewMode: mode }),
+  selectBody: (id) => set({ selectedBody: id }),
+  setObserverMassKg: (kg) => set({ observerMassKg: Number.isFinite(kg) ? kg : 70 }),
+  setEarthReference: (ref) => set({ earthReference: ref }),
+  setCustomEarthDiameterM: (m) => set({ customEarthDiameterM: m }),
+  setPerformanceMode: (on) => set({ performanceMode: on }),
+}));
