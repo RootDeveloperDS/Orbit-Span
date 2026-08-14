@@ -1,9 +1,10 @@
-/**
- * Pure mapping from astronomical state to 3D scene coordinates.
- * No React, no Three.js imports.
- */
 import { AU_IN_M, BODIES, type BodyId } from "./constants";
-import type { SolarSystemState, Vec3 } from "./ephemeris";
+import {
+  computePlanetOrbitPathEcl,
+  lengthAu,
+  type SolarSystemState,
+  type Vec3,
+} from "./ephemeris";
 
 export type LayoutMode = "scientific" | "exploration" | "human";
 
@@ -18,11 +19,13 @@ export interface PlacedBody {
   readonly radius: number;
   /** Orbit ring radius in scene units (0 for the Sun). */
   readonly orbitRadius: number;
+  /** 3D scene points for drawing the actual orbit trajectory. */
+  readonly orbitPathPoints: readonly Vec3[];
 }
 
-/** Convert an equatorial-J2000 AU vector into scene axes (x, z horizontal; y up). */
-function toSceneAxes(v: Vec3, k: number): Vec3 {
-  return { x: v.x * k, y: v.z * k, z: -v.y * k };
+/** Convert an Ecliptic J2000 AU vector into scene axes (x, z horizontal; y up). */
+function toSceneAxes(vEcl: Vec3, k: number): Vec3 {
+  return { x: vEcl.x * k, y: vEcl.z * k, z: -vEcl.y * k };
 }
 
 function auRadius(id: BodyId): number {
@@ -54,7 +57,24 @@ export function layoutSolarSystem(state: SolarSystemState, mode: LayoutMode): Pl
   return ids.map((id) => {
     const body = state.bodies[id];
     const helioAu = body.helioAu;
-    const distAu = Math.sqrt(helioAu.x ** 2 + helioAu.y ** 2 + helioAu.z ** 2);
+    const distAu = lengthAu(helioAu);
+
+    let orbitPathPoints: Vec3[] = [];
+    if (id !== "sun" && id !== "moon") {
+      const rawPathEcl = computePlanetOrbitPathEcl(
+        id as Exclude<BodyId, "sun" | "moon">,
+        state.epochMs,
+        128,
+      );
+      orbitPathPoints = rawPathEcl.map((pt) => {
+        if (mode === "scientific") {
+          return toSceneAxes(pt, SCIENTIFIC_UNITS_PER_AU);
+        }
+        const ptDist = lengthAu(pt);
+        const ptScale = ptDist > 0 ? explorationRadius(ptDist) / ptDist : 0;
+        return toSceneAxes(pt, ptScale);
+      });
+    }
 
     if (mode === "scientific") {
       const scenePos = toSceneAxes(helioAu, SCIENTIFIC_UNITS_PER_AU);
@@ -64,6 +84,7 @@ export function layoutSolarSystem(state: SolarSystemState, mode: LayoutMode): Pl
         // True relative sizes: planets become sub-pixel dots on purpose.
         radius: Math.max(auRadius(id) * SCIENTIFIC_UNITS_PER_AU, 0.004),
         orbitRadius: BODIES[id].semiMajorAxisAu * SCIENTIFIC_UNITS_PER_AU,
+        orbitPathPoints,
       };
     }
 
@@ -82,6 +103,7 @@ export function layoutSolarSystem(state: SolarSystemState, mode: LayoutMode): Pl
       position: scenePos,
       radius,
       orbitRadius: BODIES[id].semiMajorAxisAu > 0 ? explorationRadius(BODIES[id].semiMajorAxisAu) : 0,
+      orbitPathPoints,
     };
   });
 }
@@ -90,3 +112,4 @@ export function layoutSolarSystem(state: SolarSystemState, mode: LayoutMode): Pl
 export function focusDistance(placed: PlacedBody): number {
   return Math.max(placed.radius * 9, 2.5);
 }
+

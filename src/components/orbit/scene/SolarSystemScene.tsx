@@ -19,23 +19,27 @@ function useReducedMotion(): boolean {
   return ref.current;
 }
 
-/** Static ring geometry for an orbit path; created once per radius. */
-function OrbitRing({ radius, dim }: { radius: number; dim: boolean }) {
+/** 3D trajectory line for an orbit path computed from true ephemeris. */
+function OrbitPathLine({
+  points,
+  dim,
+}: {
+  points: readonly { x: number; y: number; z: number }[];
+  dim: boolean;
+}) {
   const geometry = useMemo(() => {
-    const points: THREE.Vector3[] = [];
-    for (let i = 0; i <= ORBIT_SEGMENTS; i++) {
-      const a = (i / ORBIT_SEGMENTS) * Math.PI * 2;
-      points.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
-    }
-    return new THREE.BufferGeometry().setFromPoints(points);
-  }, [radius]);
+    const threePoints = points.map((p) => new THREE.Vector3(p.x, p.y, p.z));
+    return new THREE.BufferGeometry().setFromPoints(threePoints);
+  }, [points]);
 
   useEffect(() => () => geometry.dispose(), [geometry]);
+
+  if (!points || points.length === 0) return null;
 
   return (
     <line>
       <primitive object={geometry} attach="geometry" />
-      <lineBasicMaterial color="#7fb6d9" transparent opacity={dim ? 0.12 : 0.22} />
+      <lineBasicMaterial color="#7fb6d9" transparent opacity={dim ? 0.14 : 0.28} />
     </line>
   );
 }
@@ -223,6 +227,7 @@ function SceneContents({ state }: { state: SolarSystemState }) {
       },
       radius: Math.max(earth.radius * 0.32, 0.05),
       orbitRadius: 0,
+      orbitPathPoints: [],
     };
     return placed.map((p) => (p.id === "moon" ? moonAdjusted : p));
   }, [placed, state, viewMode]);
@@ -233,9 +238,13 @@ function SceneContents({ state }: { state: SolarSystemState }) {
       <pointLight position={[0, 0, 0]} intensity={performanceMode ? 220 : 400} distance={0} decay={1.4} />
       {!performanceMode && <Starfield count={1200} />}
       {adjusted
-        .filter((p) => p.orbitRadius > 0)
+        .filter((p) => p.orbitPathPoints && p.orbitPathPoints.length > 0)
         .map((p) => (
-          <OrbitRing key={`orbit-${p.id}`} radius={p.orbitRadius} dim={viewMode === "scientific"} />
+          <OrbitPathLine
+            key={`orbit-${p.id}`}
+            points={p.orbitPathPoints}
+            dim={viewMode === "scientific"}
+          />
         ))}
       {adjusted.map((p) => (
         <BodyMesh

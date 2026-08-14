@@ -54,14 +54,65 @@ export function lengthAu(v: Vec3): number {
   return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+/** Earth obliquity of J2000 in radians (23.4392911 degrees). */
+const OBLIQUITY_J2000_RAD = (23.4392911 * Math.PI) / 180;
+const COS_EPS = Math.cos(OBLIQUITY_J2000_RAD);
+const SIN_EPS = Math.sin(OBLIQUITY_J2000_RAD);
+
+/**
+ * Convert Equatorial J2000 coordinates (from Astronomy Engine)
+ * into Ecliptic J2000 coordinates where planetary orbits lie near z = 0.
+ */
+export function eqToEcl(v: Vec3): Vec3 {
+  return {
+    x: v.x,
+    y: v.y * COS_EPS + v.z * SIN_EPS,
+    z: -v.y * SIN_EPS + v.z * COS_EPS,
+  };
+}
+
+export const ORBITAL_PERIOD_DAYS: Record<Exclude<BodyId, "sun" | "moon">, number> = {
+  mercury: 87.969,
+  venus: 224.701,
+  earth: 365.256,
+  mars: 686.98,
+  jupiter: 4332.59,
+  saturn: 10759.22,
+  uranus: 30685.4,
+  neptune: 60189.0,
+};
+
+/**
+ * Sample a planet's actual 3D ecliptic trajectory over 1 orbital period.
+ */
+export function computePlanetOrbitPathEcl(
+  id: Exclude<BodyId, "sun" | "moon">,
+  epochMs: number,
+  segments = 96,
+): Vec3[] {
+  const periodDays = ORBITAL_PERIOD_DAYS[id];
+  const periodMs = periodDays * 86400 * 1000;
+  const points: Vec3[] = [];
+  const engineBody = ENGINE_BODY[id];
+
+  for (let i = 0; i <= segments; i++) {
+    const t = epochMs + (i / segments) * periodMs;
+    const date = new Date(t);
+    const helioEq = vec(HelioVector(engineBody, date));
+    points.push(eqToEcl(helioEq));
+  }
+
+  return points;
+}
+
 /**
  * Compute the astronomical state of the Solar System for a UTC instant.
- * This is the only place real ephemeris work happens; it is deliberately
- * called at a controlled rate (not per animation frame).
+ * Deliberately called at a controlled rate (not per animation frame).
  */
 export function computeSolarSystemState(epochMs: number): SolarSystemState {
   const date = new Date(epochMs);
-  const earthHelio = vec(HelioVector(Body.Earth, date));
+  const earthHelioEq = vec(HelioVector(Body.Earth, date));
+  const earthHelio = eqToEcl(earthHelioEq);
 
   const bodies: Partial<Record<BodyId, BodyState>> = {};
 
@@ -74,19 +125,22 @@ export function computeSolarSystemState(epochMs: number): SolarSystemState {
   });
 
   // Sun: heliocentric origin; geocentric vector from Astronomy Engine.
-  bodies.sun = makeState("sun", { x: 0, y: 0, z: 0 }, vec(GeoVector(Body.Sun, date, true)));
+  const sunGeoEq = vec(GeoVector(Body.Sun, date, true));
+  bodies.sun = makeState("sun", { x: 0, y: 0, z: 0 }, eqToEcl(sunGeoEq));
 
   // Earth itself: distance from Earth is 0 (observer is Earth-centred).
   bodies.earth = makeState("earth", earthHelio, { x: 0, y: 0, z: 0 });
 
   for (const id of PLANET_ORDER) {
     if (id === "earth") continue;
-    const helio = vec(HelioVector(ENGINE_BODY[id as Exclude<BodyId, "sun" | "moon" | "earth">], date));
+    const helioEq = vec(HelioVector(ENGINE_BODY[id as Exclude<BodyId, "sun" | "moon" | "earth">], date));
+    const helio = eqToEcl(helioEq);
     bodies[id] = makeState(id, helio, sub(helio, earthHelio));
   }
 
   // Moon: geocentric vector, heliocentric derived by adding Earth's position.
-  const moonGeo = vec(GeoMoon(date));
+  const moonGeoEq = vec(GeoMoon(date));
+  const moonGeo = eqToEcl(moonGeoEq);
   bodies.moon = makeState(
     "moon",
     { x: earthHelio.x + moonGeo.x, y: earthHelio.y + moonGeo.y, z: earthHelio.z + moonGeo.z },
@@ -109,3 +163,4 @@ export function lerpVec(a: Vec3, b: Vec3, t: number): Vec3 {
 export function earthDistanceM(state: SolarSystemState, id: BodyId): number {
   return state.bodies[id].distanceFromEarthM;
 }
+
