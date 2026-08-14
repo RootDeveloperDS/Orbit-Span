@@ -43,7 +43,7 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   epochMs: Date.UTC(2026, 0, 1, 12, 0, 0),
   playbackRate: 0,
   viewMode: "exploration",
-  selectedBody: "jupiter",
+  selectedBody: "sun",
   observerMassKg: 70,
   earthReference: "10cm",
   customEarthDiameterM: 0.15,

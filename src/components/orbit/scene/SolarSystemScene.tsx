@@ -1,15 +1,18 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Html, OrbitControls } from "@react-three/drei";
-import { useEffect, useMemo, useRef } from "react";
+import { Html, OrbitControls, useCursor } from "@react-three/drei";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 
 import { BODIES, type BodyId } from "@/lib/orbit/constants";
 import type { SolarSystemState } from "@/lib/orbit/ephemeris";
 import { layoutSolarSystem, type PlacedBody } from "@/lib/orbit/sceneLayout";
+import {
+  generateEarthCloudsTexture,
+  generateSaturnRingTexture,
+  getPlanetTexture,
+} from "@/lib/orbit/textures";
 import { useOrbitStore, type ViewMode } from "@/store/useOrbitStore";
 import { usePlaybackClock, useSolarSystemState } from "@/hooks/useSolarSystemState";
-
-const ORBIT_SEGMENTS = 128;
 
 function useReducedMotion(): boolean {
   const ref = useRef(false);
@@ -54,21 +57,46 @@ interface BodyProps {
 
 function BodyMesh({ placed, selected, showLabel, onSelect, smooth }: BodyProps) {
   const groupRef = useRef<THREE.Group>(null);
+  const cloudRef = useRef<THREE.Mesh>(null);
   const target = useRef(new THREE.Vector3(placed.position.x, placed.position.y, placed.position.z));
   const meta = BODIES[placed.id];
   const isSun = placed.id === "sun";
+  const isEarth = placed.id === "earth";
+  const isSaturn = placed.id === "saturn";
+
+  const [hovered, setHovered] = useState(false);
+  useCursor(hovered);
+
+  const handlePointerOver = (e: THREE.Event) => {
+    e.stopPropagation();
+    setHovered(true);
+  };
+
+  const handlePointerOut = () => {
+    setHovered(false);
+  };
+
+  const texture = useMemo(() => getPlanetTexture(placed.id), [placed.id]);
+  const cloudTexture = useMemo(() => (isEarth ? generateEarthCloudsTexture() : null), [isEarth]);
+  const saturnRingTexture = useMemo(
+    () => (isSaturn ? generateSaturnRingTexture() : null),
+    [isSaturn],
+  );
 
   target.current.set(placed.position.x, placed.position.y, placed.position.z);
 
   useFrame((_, delta) => {
     const group = groupRef.current;
-    if (!group) return;
-    if (!smooth) {
-      group.position.copy(target.current);
-      return;
+    if (group) {
+      if (!smooth) {
+        group.position.copy(target.current);
+      } else {
+        group.position.lerp(target.current, Math.min(1, delta * 6));
+      }
     }
-    // Interpolate between controlled astronomy samples; no React state per frame.
-    group.position.lerp(target.current, Math.min(1, delta * 6));
+    if (cloudRef.current) {
+      cloudRef.current.rotation.y += delta * 0.04;
+    }
   });
 
   useEffect(() => {
@@ -83,20 +111,50 @@ function BodyMesh({ placed, selected, showLabel, onSelect, smooth }: BodyProps) 
           e.stopPropagation();
           onSelect(placed.id);
         }}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
-        <sphereGeometry args={[placed.radius, 24, 16]} />
+        <sphereGeometry args={[placed.radius, 32, 24]} />
         {isSun ? (
-          <meshBasicMaterial color={meta.color} />
+          <meshBasicMaterial map={texture} />
         ) : (
           <meshStandardMaterial
-            color={meta.color}
-            roughness={0.75}
+            map={texture}
+            color="#ffffff"
+            roughness={0.65}
             metalness={0.05}
-            emissive={selected ? meta.color : "#000000"}
-            emissiveIntensity={selected ? 0.35 : 0}
           />
         )}
       </mesh>
+
+      {/* Earth Cloud Layer */}
+      {isEarth && cloudTexture && (
+        <mesh ref={cloudRef}>
+          <sphereGeometry args={[placed.radius * 1.015, 32, 24]} />
+          <meshStandardMaterial
+            map={cloudTexture}
+            transparent
+            opacity={0.85}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
+
+      {/* Saturn Ring System */}
+      {isSaturn && saturnRingTexture && (
+        <group rotation={[0.46, 0, 0]}>
+          <mesh>
+            <ringGeometry args={[placed.radius * 1.3, placed.radius * 2.3, 64]} />
+            <meshStandardMaterial
+              map={saturnRingTexture}
+              transparent
+              side={THREE.DoubleSide}
+              roughness={0.8}
+            />
+          </mesh>
+        </group>
+      )}
+
       {/* Larger invisible hit area for touch targets */}
       <mesh
         visible={false}
@@ -104,13 +162,15 @@ function BodyMesh({ placed, selected, showLabel, onSelect, smooth }: BodyProps) 
           e.stopPropagation();
           onSelect(placed.id);
         }}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
       >
         <sphereGeometry args={[Math.max(placed.radius * 2.4, 0.35), 8, 6]} />
       </mesh>
       {selected && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[placed.radius * 1.7, placed.radius * 1.9, 48]} />
-          <meshBasicMaterial color="#8fd4ff" transparent opacity={0.8} side={THREE.DoubleSide} />
+          <ringGeometry args={[placed.radius * 1.4, placed.radius * 1.55, 48]} />
+          <meshBasicMaterial color="#8fd4ff" transparent opacity={0.85} side={THREE.DoubleSide} />
         </mesh>
       )}
       {showLabel && (
@@ -145,17 +205,67 @@ function CameraRig({
   const controls = useRef<React.ComponentRef<typeof OrbitControls>>(null);
   const { camera } = useThree();
   const desired = useRef(new THREE.Vector3());
+  const prevSelected = useRef<BodyId | null>(null);
+  const isFirstFrame = useRef(true);
 
+  // Automatically fly camera directly to the selected body when focus changes
   useEffect(() => {
-    const dist = viewMode === "scientific" ? 90 : 34;
-    camera.position.set(dist * 0.55, dist * 0.42, dist * 0.7);
-  }, [camera, viewMode]);
+    const focus = placedBodies.find((b) => b.id === selectedBody);
+    if (!focus) return;
+
+    const c = controls.current;
+    const focusDist =
+      selectedBody === "sun"
+        ? (viewMode === "scientific" ? 2.5 : 6.0)
+        : Math.max(focus.radius * 4.5, viewMode === "scientific" ? 0.015 : 2.5);
+    const offset = new THREE.Vector3(focusDist * 0.7, focusDist * 0.5, focusDist * 0.85);
+
+    if (prevSelected.current !== selectedBody || isFirstFrame.current) {
+      prevSelected.current = selectedBody;
+      camera.position.set(
+        focus.position.x + offset.x,
+        focus.position.y + offset.y,
+        focus.position.z + offset.z,
+      );
+      if (c) {
+        c.target.set(focus.position.x, focus.position.y, focus.position.z);
+        c.update();
+      }
+    }
+  }, [camera, placedBodies, selectedBody, viewMode]);
 
   useFrame((_, delta) => {
     const c = controls.current;
     if (!c) return;
     const focus = placedBodies.find((b) => b.id === selectedBody);
     if (!focus) return;
+
+    if (isFirstFrame.current) {
+      isFirstFrame.current = false;
+      const focusDist =
+        selectedBody === "sun"
+          ? (viewMode === "scientific" ? 2.5 : 6.0)
+          : Math.max(focus.radius * 4.5, viewMode === "scientific" ? 0.015 : 2.5);
+      const offset = new THREE.Vector3(focusDist * 0.7, focusDist * 0.5, focusDist * 0.85);
+      camera.position.set(
+        focus.position.x + offset.x,
+        focus.position.y + offset.y,
+        focus.position.z + offset.z,
+      );
+      c.target.set(focus.position.x, focus.position.y, focus.position.z);
+      c.update();
+    }
+
+    // Adaptive camera near/far clipping so user can zoom infinitely close in Scientific mode
+    if (camera instanceof THREE.PerspectiveCamera) {
+      const minNear = Math.max(0.000005, focus.radius * 0.005);
+      if (Math.abs(camera.near - minNear) > 0.000001) {
+        camera.near = minNear;
+        camera.far = viewMode === "scientific" ? 5000 : 2000;
+        camera.updateProjectionMatrix();
+      }
+    }
+
     desired.current.set(focus.position.x, focus.position.y, focus.position.z);
     c.target.lerp(desired.current, Math.min(1, delta * 2.5));
     c.update();
@@ -167,8 +277,8 @@ function CameraRig({
       enablePan={false}
       enableDamping
       dampingFactor={0.08}
-      minDistance={1.5}
-      maxDistance={400}
+      minDistance={0.00001}
+      maxDistance={5000}
       makeDefault
     />
   );
@@ -234,8 +344,8 @@ function SceneContents({ state }: { state: SolarSystemState }) {
 
   return (
     <>
-      <ambientLight intensity={0.22} />
-      <pointLight position={[0, 0, 0]} intensity={performanceMode ? 220 : 400} distance={0} decay={1.4} />
+      <ambientLight intensity={0.35} />
+      <pointLight position={[0, 0, 0]} intensity={performanceMode ? 250 : 500} distance={0} decay={1.2} />
       {!performanceMode && <Starfield count={1200} />}
       {adjusted
         .filter((p) => p.orbitPathPoints && p.orbitPathPoints.length > 0)
@@ -271,10 +381,11 @@ export default function SolarSystemScene() {
     <Canvas
       className="h-full w-full"
       dpr={performanceMode ? 1 : [1, 1.8]}
-      gl={{ antialias: !performanceMode, powerPreference: "high-performance" }}
-      camera={{ fov: 45, near: 0.01, far: 2000, position: [18, 14, 24] }}
+      gl={{ antialias: !performanceMode, powerPreference: "high-performance", logarithmicDepthBuffer: true }}
+      camera={{ fov: 45, near: 0.00005, far: 5000, position: [18, 14, 24] }}
     >
       <SceneContents state={state} />
     </Canvas>
   );
 }
+

@@ -15,7 +15,7 @@ export function BodySelector() {
             type="button"
             aria-pressed={selectedBody === id}
             onClick={() => selectBody(id)}
-            className={`flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
+            className={`flex cursor-pointer items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors ${
               selectedBody === id
                 ? "border-primary/60 bg-primary/15 text-foreground"
                 : "border-border text-muted-foreground hover:text-foreground"
