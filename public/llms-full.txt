@@ -1,0 +1,67 @@
+# OrbitSpan — Full Technical & Scientific Manifest
+
+> Comprehensive documentation for AI search engines, researchers, and developers detailing the physics engine, orbital calculation methodology, human scale transformation, and educational resources of OrbitSpan.
+
+## Core Platform Identity
+
+- **Platform Name**: OrbitSpan (also known as Orbit Span, Cosmic Scale Explorer)
+- **Production URL**: https://orbitspan.vercel.app/
+- **Source Code**: https://github.com/RootDeveloperDS/Orbit-Span
+- **Author**: Devansh Sharma (RootDeveloperDS)
+- **License**: MIT
+- **Application Category**: Educational Astrophysics Web Application
+
+---
+
+## Complete Route Directory
+
+### 1. 3D Solar System Explorer (`/`)
+- **URL**: https://orbitspan.vercel.app/
+- **Purpose**: Real-time 3D interactive planetary simulation.
+- **Key Features**:
+  - Live planetary coordinate calculation in J2000 equatorial/ecliptic frames using VSOP87 series.
+  - Two viewing modes:
+    1. **Scientific Mode**: Honest 1:1 astronomical scale where distances and planetary sizes are strictly to scale.
+    2. **Exploration Mode**: Distance compression (square-root mapping) and sublinear radius scaling to enable seamless viewing of the entire solar system on a single screen.
+  - Interactive time controls: real-time live clock, pause, scrubbing backward/forward, speed multipliers (1x to 100,000x).
+  - Celestial body selector and live telemetry readout (distance in AU/km, light-travel time, mass, orbital semi-major axis, gravitational acceleration on Earth).
+
+### 2. Gravity Lab (`/gravity-lab`)
+- **URL**: https://orbitspan.vercel.app/gravity-lab
+- **Purpose**: Quantitative Newtonian gravity simulator.
+- **Physics Methodology**:
+  - Acceleration: $$a = \frac{G \cdot M}{r^2}$$
+  - Force: $$F = m \cdot a$$
+  - User inputs custom observer mass (e.g. 70 kg) and receives exact instantaneous force in Newtons ($N$) and acceleration in $m/s^2$ from the Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn, Uranus, and Neptune.
+  - Comparative visualization demonstrating why nearby everyday objects exert gravitational acceleration comparable to or exceeding distant planets due to the inverse-square law.
+
+### 3. Human Scale Engine (`/human-scale`)
+- **URL**: https://orbitspan.vercel.app/human-scale
+- **Purpose**: Intuitive scale model translator bridging astronomical distances to human-scale physical benchmarks.
+- **Supported Benchmarks**:
+  - 1 cm Earth (Marble Scale, 1:1,274,200,000 ratio)
+  - 5 cm Earth (Golf Ball Scale, 1:254,840,000 ratio)
+  - 10 cm Earth (Human Fist Scale, 1:127,420,000 ratio)
+  - 25 cm Earth (Basketball Scale, 1:50,968,000 ratio)
+  - 1.0 m Earth (Giant Classroom Globe Scale, 1:12,742,000 ratio)
+- **Live Computations**:
+  - Dynamically recalculates distances to Moon (meters), Sun (meters/km), and outer planets (km) using instantaneous ephemeris vectors.
+
+### 4. Science & Learn (`/learn`)
+- **URL**: https://orbitspan.vercel.app/learn
+- **Topics Covered**:
+  - Why astronomical scale is difficult to visualize (empty space vs illustrated textbook distortions).
+  - The Inverse-Square Law and synodic distance variance (e.g. Earth–Mars distance shifts from 0.4 AU to 2.6 AU).
+  - Difference between Gravitational Acceleration ($m/s^2$) and Gravitational Force ($N$).
+  - How planetary orbits are calculated using perturbation theory and VSOP87 series.
+  - Lunar and solar tidal forces on oceans vs human bodies.
+  - Rigorous scientific assessment of physics vs astrology.
+
+### 5. Sources & Methodology (`/sources`)
+- **URL**: https://orbitspan.vercel.app/sources
+- **Standard Constants**:
+  - $G = 6.67430 \times 10^{-11} \text{ m}^3\text{kg}^{-1}\text{s}^{-2}$ (CODATA)
+  - $1 \text{ AU} = 1.495978707 \times 10^{11} \text{ m}$ (IAU 2012)
+  - Earth Mean Diameter = $12,742 \text{ km}$
+  - Earth Standard Surface Gravity = $9.80665 \text{ m/s}^2$
+- **Ephemeris Library**: Astronomy Engine by Don Cross (MIT License).

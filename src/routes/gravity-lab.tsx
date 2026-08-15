@@ -6,18 +6,77 @@ import { GravityChart } from "@/components/orbit/GravityChart";
 import { MassInput } from "@/components/orbit/MassInput";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
+import {
+  ROUTE_SEO,
+  BASE_URL,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_ALT,
+  getBreadcrumbSchema,
+} from "@/lib/seo-config";
 
-const TITLE = "Gravity Lab — how strongly each planet pulls on you | OrbitSpan";
-const DESCRIPTION =
-  "Enter your mass and see the real gravitational acceleration and force from the Sun, Moon and every planet at their current calculated distances.";
+const { title, description, keywords, breadcrumbs } = ROUTE_SEO.gravityLab;
+const CANONICAL_URL = `${BASE_URL}/gravity-lab`;
+
+const gravityLabSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    getBreadcrumbSchema(breadcrumbs),
+    {
+      "@type": "TechArticle",
+      "@id": `${CANONICAL_URL}#article`,
+      headline: title,
+      description: description,
+      url: CANONICAL_URL,
+      inLanguage: "en-US",
+      author: {
+        "@type": "Person",
+        name: "Devansh Sharma",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "RootDeveloperDS",
+      },
+      about: [
+        {
+          "@type": "Thing",
+          name: "Newton's Law of Universal Gravitation",
+        },
+        {
+          "@type": "Thing",
+          name: "Gravitational Acceleration",
+        },
+        {
+          "@type": "Thing",
+          name: "Inverse-Square Law",
+        },
+      ],
+    },
+  ],
+};
 
 export const Route = createFileRoute("/gravity-lab")({
   head: () => ({
     meta: [
-      { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title },
+      { name: "description", content: description },
+      { name: "keywords", content: keywords.join(", ") },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:url", content: CANONICAL_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+      { property: "og:type", content: "article" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+    ],
+    links: [{ rel: "canonical", href: CANONICAL_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(gravityLabSchema),
+      },
     ],
   }),
   component: GravityLabPage,

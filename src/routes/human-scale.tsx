@@ -4,18 +4,75 @@ import { BodySelector } from "@/components/orbit/BodySelector";
 import { HumanScalePanel } from "@/components/orbit/HumanScalePanel";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
+import {
+  ROUTE_SEO,
+  BASE_URL,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_ALT,
+  getBreadcrumbSchema,
+} from "@/lib/seo-config";
 
-const TITLE = "Human Scale — the Solar System with a fist-sized Earth | OrbitSpan";
-const DESCRIPTION =
-  "Shrink Earth to 1 cm, a fist, or a metre and see where the Moon, Sun and planets would actually sit — computed live from real orbital positions.";
+const { title, description, keywords, breadcrumbs } = ROUTE_SEO.humanScale;
+const CANONICAL_URL = `${BASE_URL}/human-scale`;
+
+const humanScaleSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    getBreadcrumbSchema(breadcrumbs),
+    {
+      "@type": "LearningResource",
+      "@id": `${CANONICAL_URL}#resource`,
+      name: title,
+      description: description,
+      url: CANONICAL_URL,
+      educationalLevel: "All Ages / Secondary / Higher Education",
+      learningResourceType: "Interactive Simulation & Scale Model",
+      inLanguage: "en-US",
+      author: {
+        "@type": "Person",
+        name: "Devansh Sharma",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "RootDeveloperDS",
+      },
+      about: [
+        {
+          "@type": "Thing",
+          name: "Solar System Scale Model",
+        },
+        {
+          "@type": "Thing",
+          name: "Planetary Diameters and Orbital Distances",
+        },
+      ],
+    },
+  ],
+};
 
 export const Route = createFileRoute("/human-scale")({
   head: () => ({
     meta: [
-      { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title },
+      { name: "description", content: description },
+      { name: "keywords", content: keywords.join(", ") },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:url", content: CANONICAL_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+      { property: "og:type", content: "article" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+    ],
+    links: [{ rel: "canonical", href: CANONICAL_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(humanScaleSchema),
+      },
     ],
   }),
   component: HumanScalePage,

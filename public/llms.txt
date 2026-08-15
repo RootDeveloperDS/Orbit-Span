@@ -1,0 +1,25 @@
+# OrbitSpan
+
+> OrbitSpan is an interactive astrophysics and orbital scale web application. It calculates real-time planetary positions using live VSOP87 ephemeris series, computes true Newtonian gravitational acceleration ($a = GM/r^2$) and force ($F = ma$) on the human body, and translates astronomical distances into intuitive human-scale physical benchmarks.
+
+## Primary Routes & Tools
+
+- [3D Solar System Explorer](https://orbitspan.vercel.app/): Interactive 3D WebGL/Three.js planetarium rendering true relative planetary distances (Scientific Mode) and visual readability layouts (Exploration Mode) with real-time orbital time controls.
+- [Gravity Lab](https://orbitspan.vercel.app/gravity-lab): Live gravitational force calculator where users input body mass to determine the exact acceleration (m/s²) and force (N) from the Sun, Moon, and all planets at their instantaneous distances.
+- [Human Scale Engine](https://orbitspan.vercel.app/human-scale): Scaled Solar System model allowing users to shrink Earth to 1 cm (marble), 5 cm (golf ball), 10 cm (fist), 25 cm (basketball), or 1.0 m (giant globe) with real-time recalculation of walking distances to celestial bodies.
+- [Science & Learn](https://orbitspan.vercel.app/learn): Educational astrophysics guide covering the inverse-square law, acceleration vs force, planetary ephemerides, tidal forces, and an empirical evaluation of physics vs astrology.
+- [Sources & Methodology](https://orbitspan.vercel.app/sources): Detailed technical documentation of physical constants (CODATA, IAU 2012), ephemeris algorithms (Astronomy Engine VSOP87 / Meeus ELP), and pure client-side architecture.
+
+## Scientific Formulas
+
+- **Gravitational Acceleration**: $a = \frac{G \cdot M}{r^2}$ (where $G = 6.67430 \times 10^{-11} \text{ m}^3\text{kg}^{-1}\text{s}^{-2}$)
+- **Gravitational Force on Observer**: $F = m_{\text{observer}} \cdot a$
+- **Human-Scale Distance Scaling**: $d_{\text{scaled}} = d_{\text{real}} \times \left(\frac{D_{\text{model}}}{12,742,000 \text{ m}}\right)$
+
+## Technical Architecture
+
+- **Framework**: TanStack Start / React 19 / TypeScript / Three.js (R3F)
+- **Ephemeris**: Astronomy Engine by Don Cross (VSOP87 series)
+- **Deployment**: https://orbitspan.vercel.app/
+- **Repository**: https://github.com/RootDeveloperDS/Orbit-Span
+- **Author**: Devansh Sharma (RootDeveloperDS)

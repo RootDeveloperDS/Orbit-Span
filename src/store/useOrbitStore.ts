@@ -40,7 +40,7 @@ export const PLAYBACK_RATES: readonly { label: string; value: number }[] = [
 ];
 
 export const useOrbitStore = create<OrbitState>((set) => ({
-  epochMs: Date.UTC(2026, 0, 1, 12, 0, 0),
+  epochMs: Date.now(),
   playbackRate: 0,
   viewMode: "exploration",
   selectedBody: "sun",

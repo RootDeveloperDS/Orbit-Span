@@ -1,12 +1,15 @@
 {
-  "name": "OrbitSpan — Solar System scale & gravity",
+  "name": "OrbitSpan — Solar System Scale, Live Ephemeris & Gravity",
   "short_name": "OrbitSpan",
-  "description": "Explore real planetary positions, human-scale distances and the actual gravitational pull of the planets on you.",
+  "description": "Explore real planetary positions, human-scale astronomical models and the true Newtonian gravitational pull of the planets on your body.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#080c17",
   "theme_color": "#080c17",
+  "lang": "en-US",
+  "categories": ["education", "science", "utilities"],
   "icons": [
     {
       "src": "/favicon-96x96.png",
@@ -24,6 +27,36 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "3D Solar System Explorer",
+      "short_name": "Explorer",
+      "description": "Interactive 3D Solar System with live planetary ephemeris",
+      "url": "/",
+      "icons": [{ "src": "/favicon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Gravity Lab",
+      "short_name": "Gravity",
+      "description": "Calculate real planetary gravitational pull on your body mass",
+      "url": "/gravity-lab",
+      "icons": [{ "src": "/favicon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Human Scale Model",
+      "short_name": "Scale",
+      "description": "Shrink Earth to a marble or fist to intuitively explore cosmic scale",
+      "url": "/human-scale",
+      "icons": [{ "src": "/favicon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Science & Learn",
+      "short_name": "Learn",
+      "description": "Astrophysics, inverse-square law, and physics vs astrology",
+      "url": "/learn",
+      "icons": [{ "src": "/favicon-96x96.png", "sizes": "96x96" }]
     }
   ]
 }

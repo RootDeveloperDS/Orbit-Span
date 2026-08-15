@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://orbitspan.vercel.app</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://orbitspan.vercel.app/logo.png</image:loc>
+      <image:title>OrbitSpan — Interactive 3D Solar System, Live Ephemeris &amp; Planetary Scale</image:title>
+      <image:caption>Explore the Solar System in interactive 3D with live calculated planetary positions (VSOP87 ephemeris), true-scale orbital distances, and real-time gravitational readouts.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://orbitspan.vercel.app/gravity-lab</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://orbitspan.vercel.app/logo.png</image:loc>
+      <image:title>Gravity Lab — Real-Time Planetary Gravitational Pull Calculator | OrbitSpan</image:title>
+      <image:caption>Enter your body mass to calculate the real Newtonian gravitational acceleration (a = GM/r²) and force (F = ma) exerted on you by the Sun, Moon, and every planet live.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://orbitspan.vercel.app/human-scale</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://orbitspan.vercel.app/logo.png</image:loc>
+      <image:title>Human Scale Solar System — Intuitive Cosmic Distances | OrbitSpan</image:title>
+      <image:caption>Shrink Earth to the size of a marble (1 cm), a golf ball (5 cm), a fist (10 cm), or a basketball (25 cm) to discover where the Moon, Sun, and planets sit at true physical scale.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://orbitspan.vercel.app/learn</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://orbitspan.vercel.app/logo.png</image:loc>
+      <image:title>Science &amp; Physics of Cosmic Scale &amp; Gravity | OrbitSpan</image:title>
+      <image:caption>Master the physics of cosmic scale: the inverse-square law, acceleration vs force, planetary ephemerides, tidal forces, and a rigorous scientific evaluation of physics vs astrology.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://orbitspan.vercel.app/sources</loc>
+    <lastmod>2026-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://orbitspan.vercel.app/logo.png</image:loc>
+      <image:title>Data Sources, Constants &amp; Mathematical Methodology | OrbitSpan</image:title>
+      <image:caption>Explore the open-source astronomy ephemeris (VSOP87 / Meeus), NASA JPL planetary parameters, CODATA &amp; IAU physical constants, and computational methods powering OrbitSpan.</image:caption>
+    </image:image>
+  </url>
+</urlset>

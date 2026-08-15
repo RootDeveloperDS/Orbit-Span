@@ -13,7 +13,7 @@ import {
   ExternalLink,
   Sparkles,
 } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -76,6 +76,11 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const isExplorer = location.pathname === "/";
+
+  // Automatically synchronize simulation time to the latest current time whenever user opens the app
+  useEffect(() => {
+    useOrbitStore.getState().now();
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -165,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <ExternalLink className="h-2.5 w-2.5 opacity-70" />
                 </a>
                 <span className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-secondary/40 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
-                  v1.0.0
+                  v1.1.0
                 </span>
               </div>
             </div>

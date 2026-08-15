@@ -2,18 +2,86 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { AU_IN_M, EARTH_MEAN_DIAMETER_M, G } from "@/lib/orbit/constants";
 import { EARTH_SURFACE_G } from "@/lib/orbit/physics";
+import {
+  ROUTE_SEO,
+  BASE_URL,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_OG_IMAGE_ALT,
+  getBreadcrumbSchema,
+} from "@/lib/seo-config";
 
-const TITLE = "Sources & Methodology | OrbitSpan";
-const DESCRIPTION =
-  "The astronomy model, Newtonian calculation method, SI constants, data sources and visualization limitations behind OrbitSpan.";
+const { title, description, keywords, breadcrumbs } = ROUTE_SEO.sources;
+const CANONICAL_URL = `${BASE_URL}/sources`;
+
+const sourcesSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    getBreadcrumbSchema(breadcrumbs),
+    {
+      "@type": "TechArticle",
+      "@id": `${CANONICAL_URL}#article`,
+      headline: title,
+      description: description,
+      url: CANONICAL_URL,
+      inLanguage: "en-US",
+      author: {
+        "@type": "Person",
+        name: "Devansh Sharma",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "RootDeveloperDS",
+      },
+      about: [
+        {
+          "@type": "Thing",
+          name: "Astronomy Ephemeris Algorithms (VSOP87 / Meeus)",
+        },
+        {
+          "@type": "Thing",
+          name: "CODATA Physical Constants",
+        },
+        {
+          "@type": "Thing",
+          name: "IAU 2012 Astronomical Standards",
+        },
+        {
+          "@type": "Thing",
+          name: "NASA JPL Planetary Ephemerides",
+        },
+      ],
+      citation: [
+        "https://github.com/cosinekitty/astronomy",
+        "https://ssd.jpl.nasa.gov/planets/phys_par.html",
+        "https://physics.nist.gov/cuu/Constants/",
+      ],
+    },
+  ],
+};
 
 export const Route = createFileRoute("/sources")({
   head: () => ({
     meta: [
-      { title: TITLE },
-      { name: "description", content: DESCRIPTION },
-      { property: "og:title", content: TITLE },
-      { property: "og:description", content: DESCRIPTION },
+      { title },
+      { name: "description", content: description },
+      { name: "keywords", content: keywords.join(", ") },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:url", content: CANONICAL_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+      { property: "og:type", content: "article" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
+      { name: "twitter:image:alt", content: DEFAULT_OG_IMAGE_ALT },
+    ],
+    links: [{ rel: "canonical", href: CANONICAL_URL }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(sourcesSchema),
+      },
     ],
   }),
   component: SourcesPage,
