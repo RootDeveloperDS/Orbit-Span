@@ -155,7 +155,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 <a
-                  href="https://github.com/RootDeveloperDS/Orbit-Scale"
+                  href="https://github.com/RootDeveloperDS/Orbit-Span"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary transition-colors hover:bg-primary/20"
@@ -330,7 +330,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </p>
             </div>
             <a
-              href="https://github.com/RootDeveloperDS/Orbit-Scale"
+              href="https://github.com/RootDeveloperDS/Orbit-Span"
               target="_blank"
               rel="noopener noreferrer"
               className="shrink-0 inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-all hover:bg-primary/90 shadow-sm"
@@ -364,12 +364,12 @@ export function AppShell({ children }: { children: ReactNode }) {
             </p>
             <div className="flex items-center gap-3">
               <a
-                href="https://github.com/RootDeveloperDS/Orbit-Scale"
+                href="https://github.com/RootDeveloperDS/Orbit-Span"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[11px] text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
               >
-                <Github className="h-3 w-3" /> Orbit-Scale
+                <Github className="h-3 w-3" /> Orbit-Span
               </a>
               <span>·</span>
               <span className="flex items-center gap-1.5 font-mono text-[10px] tracking-[0.1em] uppercase text-muted-foreground">
