@@ -8,7 +8,7 @@ import { SceneHost } from "@/components/orbit/scene/SceneHost";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
 import { useOrbitStore } from "@/store/useOrbitStore";
 
-const TITLE = "OrbitScale — Solar System scale & real planetary positions";
+const TITLE = "OrbitSpan — Solar System scale & real planetary positions";
 const DESCRIPTION =
   "Explore an interactive 3D Solar System with real calculated planetary positions, true-scale distances and the gravitational pull each planet has on you.";
 
@@ -54,7 +54,7 @@ function ExplorerPage() {
   const state = useSolarSystemState();
 
   return (
-    <div className="relative flex flex-col lg:h-[calc(100vh-3.5rem-5.5rem)] lg:flex-row">
+    <div className="relative flex flex-col lg:h-[calc(100vh-3.5rem)] lg:flex-row">
       <div className="relative h-[52vh] min-h-[320px] w-full border-b border-border/60 lg:h-full lg:flex-1 lg:border-b-0">
         <SceneHost />
         <div className="pointer-events-none absolute top-3 left-3 max-w-xs">
@@ -65,12 +65,18 @@ function ExplorerPage() {
         </p>
       </div>
 
-      <aside className="w-full shrink-0 space-y-3 overflow-y-auto p-3 lg:w-[380px] lg:border-l lg:border-border/60">
-        <h1 className="px-1 text-xl font-semibold">Solar System Explorer</h1>
-        <ModeSwitch />
-        <TimeControls />
-        <BodySelector />
-        <BodyReadout state={state} />
+      <aside className="w-full shrink-0 p-3 lg:w-[380px] lg:border-l lg:border-border/60 flex flex-col justify-between overflow-y-auto">
+        <div className="space-y-3">
+          <h1 className="px-1 text-xl font-semibold">Solar System Explorer</h1>
+          <ModeSwitch />
+          <TimeControls />
+          <BodySelector />
+          <BodyReadout state={state} />
+        </div>
+        <div className="border-t border-border/40 pt-4 mt-6 text-[10px] leading-relaxed text-muted-foreground">
+          <span className="font-semibold text-foreground uppercase tracking-wider block mb-1">Education Note</span>
+          OrbitSpan is an educational tool. Every planet attracts you gravitationally, but there is no scientific evidence that planetary alignments determine destiny, personality or future events.
+        </div>
       </aside>
     </div>
   );

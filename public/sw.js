@@ -1,8 +1,20 @@
-/* OrbitScale service worker: app-shell + static asset cache.
+/* OrbitSpan service worker: app-shell + static asset cache.
    Deliberately conservative — never caches API traffic (there is none) and
    always falls back to the network. */
-const CACHE = "orbitscale-v1";
-const SHELL = ["/", "/gravity-lab", "/human-scale", "/learn", "/sources", "/favicon.ico"];
+const CACHE = "orbitspan-v1";
+const SHELL = [
+  "/",
+  "/gravity-lab",
+  "/human-scale",
+  "/learn",
+  "/sources",
+  "/favicon.ico",
+  "/favicon-96x96.png",
+  "/favicon.svg",
+  "/apple-touch-icon.png",
+  "/manifest.webmanifest",
+  "/logo.png"
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

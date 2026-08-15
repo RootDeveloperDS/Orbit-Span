@@ -5,7 +5,7 @@ import { HumanScalePanel } from "@/components/orbit/HumanScalePanel";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
 
-const TITLE = "Human Scale — the Solar System with a fist-sized Earth | OrbitScale";
+const TITLE = "Human Scale — the Solar System with a fist-sized Earth | OrbitSpan";
 const DESCRIPTION =
   "Shrink Earth to 1 cm, a fist, or a metre and see where the Moon, Sun and planets would actually sit — computed live from real orbital positions.";
 

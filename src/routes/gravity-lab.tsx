@@ -7,7 +7,7 @@ import { MassInput } from "@/components/orbit/MassInput";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
 
-const TITLE = "Gravity Lab — how strongly each planet pulls on you | OrbitScale";
+const TITLE = "Gravity Lab — how strongly each planet pulls on you | OrbitSpan";
 const DESCRIPTION =
   "Enter your mass and see the real gravitational acceleration and force from the Sun, Moon and every planet at their current calculated distances.";
 

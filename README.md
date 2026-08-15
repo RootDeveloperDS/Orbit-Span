@@ -1,8 +1,8 @@
 # Cosmic Scale Explorer
 
-Build a production-quality educational astronomy web app called OrbitScale. This must be a real functional V1, not a landing-page mockup. The user already has a GitHub repo RootDeveloperDS/OrbitScale, but build the complete portable standard TypeScript project in this Lovable project; do not require GitHub integration to begin.
+Build a production-quality educational astronomy web app called OrbitSpan. This must be a real functional V1, not a landing-page mockup. The user already has a GitHub repo RootDeveloperDS/Orbit-Scale, but build the complete portable standard TypeScript project in this Lovable project; do not require GitHub integration to begin.
 
-PRODUCT: OrbitScale helps users understand Solar System scale and the actual gravitational influence of planets on a human. Scientific message: every planet gravitationally attracts you, but there is no established scientific evidence that planetary positions determine personality, luck, relationships, destiny, or future events. Do not use insulting or sensational anti-astrology language.
+PRODUCT: OrbitSpan helps users understand Solar System scale and the actual gravitational influence of planets on a human. Scientific message: every planet gravitationally attracts you, but there is no established scientific evidence that planetary positions determine personality, luck, relationships, destiny, or future events. Do not use insulting or sensational anti-astrology language.
 
 V1 MUST LET USERS: explore a real interactive 3D Solar System; select date/time and see calculated planetary positions update; select a body and see Earth-body distance, gravitational acceleration and force on a user-selected mass; use Human Scale where Earth is 1cm/5cm/10cm/25cm/50cm/1m/custom (10cm labeled approximate fist reference); compare gravity logarithmically; switch scientific scale / exploration / human scale; read methodology and physics-vs-astrology education; use the core experience offline after caching; work on mobile and desktop.
 
@@ -26,7 +26,7 @@ OFFLINE/BANDWIDTH: PWA/service-worker foundation; cache app shell and core stati
 
 PERFORMANCE: strict TypeScript, pure astronomy/physics/scale modules separated from React UI, no any unless unavoidable, no per-frame React state, avoid allocations in render loops, dispose Three resources, respect prefers-reduced-motion, low-power/mobile fallback, memoize appropriately, minimal dependencies, unit tests for physics/scale/formatting and key astronomy calculations, basic E2E smoke coverage, production build must pass.
 
-DESIGN: Brand OrbitScale. No logo exists; create a simple temporary text/icon mark. Dark near-black/navy space background, restrained cyan/blue/white accents, premium observatory/instrument feel, strong typography, sparse glass panels, no excessive neon. 3D scene is the centerpiece. Responsive mobile layout.
+DESIGN: Brand OrbitSpan. No logo exists; create a simple temporary text/icon mark. Dark near-black/navy space background, restrained cyan/blue/white accents, premium observatory/instrument feel, strong typography, sparse glass panels, no excessive neon. 3D scene is the centerpiece. Responsive mobile layout.
 
 ROUTES/SECTIONS: Home/Explorer, Gravity Lab, Human Scale, Science/Learn, Sources/Methodology. Prefer one app shell and avoid duplicating heavy 3D scenes.
 

@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const TITLE = "The science of scale and gravity | OrbitScale";
+const TITLE = "The science of scale and gravity | OrbitSpan";
 const DESCRIPTION =
   "Scale, the inverse-square law, acceleration versus force, planetary motion, and what physics can and cannot say about planetary influence on people.";
 
@@ -30,7 +30,7 @@ function LearnPage() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-2xl font-semibold">Science & Learn</h1>
       <p className="mt-2 mb-6 text-sm leading-relaxed text-muted-foreground">
-        Everything OrbitScale shows comes from two well-tested ideas: bodies move on computable orbits,
+        Everything OrbitSpan shows comes from two well-tested ideas: bodies move on computable orbits,
         and mass attracts mass with a strength that falls off with the square of distance.
       </p>
 
@@ -40,7 +40,7 @@ function LearnPage() {
             The Solar System is mostly empty. If Earth were a 10 cm ball, the Moon would be a 2.7 cm
             ball three metres away, the Sun an 11 m sphere over a kilometre off, and Neptune would be
             tens of kilometres distant. Almost every diagram you have seen compresses distance,
-            enlarges planets, or both — which is exactly why OrbitScale separates true scale from
+            enlarges planets, or both — which is exactly why OrbitSpan separates true scale from
             exploration layouts and says so on screen.
           </p>
         </Section>
@@ -71,7 +71,7 @@ function LearnPage() {
           <p>
             Planetary positions follow from gravity plus initial conditions. Modern ephemerides — like
             the VSOP87-derived series used by Astronomy Engine — reproduce those orbits to arc-second
-            accuracy over centuries, which is why OrbitScale can compute a genuine position for any
+            accuracy over centuries, which is why OrbitSpan can compute a genuine position for any
             timestamp instead of animating a decorative circle.
           </p>
         </Section>
@@ -88,7 +88,7 @@ function LearnPage() {
         <Section title="Physics vs astrology — stated carefully">
           <p>
             Every planet does attract you. That part of astrology's imagery is physically real, and
-            OrbitScale shows the numbers rather than hiding them.
+            OrbitSpan shows the numbers rather than hiding them.
           </p>
           <p>
             The scientific problem is different: there is no established evidence for the claimed
@@ -106,7 +106,7 @@ function LearnPage() {
           </p>
           <p>
             Astrology remains culturally and historically significant, and people find meaning in it.
-            OrbitScale is not here to mock that; it is here to make the measurable physics legible.
+            OrbitSpan is not here to mock that; it is here to make the measurable physics legible.
           </p>
         </Section>
       </div>

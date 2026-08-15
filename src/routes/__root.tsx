@@ -80,10 +80,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { name: "theme-color", content: "#080c17" },
-      { name: "author", content: "OrbitScale" },
+      { name: "author", content: "OrbitSpan" },
       { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "OrbitScale" },
+      { property: "og:site_name", content: "OrbitSpan" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "msapplication-TileColor", content: "#080c17" },
     ],
     links: [
       {
@@ -95,7 +96,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96x96.png" },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "shortcut icon", href: "/favicon.ico" },
     ],
   }),
 

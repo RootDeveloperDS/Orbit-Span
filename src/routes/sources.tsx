@@ -3,9 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AU_IN_M, EARTH_MEAN_DIAMETER_M, G } from "@/lib/orbit/constants";
 import { EARTH_SURFACE_G } from "@/lib/orbit/physics";
 
-const TITLE = "Sources & Methodology | OrbitScale";
+const TITLE = "Sources & Methodology | OrbitSpan";
 const DESCRIPTION =
-  "The astronomy model, Newtonian calculation method, SI constants, data sources and visualization limitations behind OrbitScale.";
+  "The astronomy model, Newtonian calculation method, SI constants, data sources and visualization limitations behind OrbitSpan.";
 
 export const Route = createFileRoute("/sources")({
   head: () => ({
@@ -33,7 +33,7 @@ function SourcesPage() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-2xl font-semibold">Sources & Methodology</h1>
       <p className="mt-2 mb-6 text-sm leading-relaxed text-muted-foreground">
-        Every number in OrbitScale is computed in your browser from published constants and an
+        Every number in OrbitSpan is computed in your browser from published constants and an
         open-source ephemeris. There is no server-side physics, no database and no live astronomy API.
       </p>
 
@@ -50,7 +50,7 @@ function SourcesPage() {
               Astronomy Engine
             </a>{" "}
             by Don Cross (MIT licence), which implements VSOP87-derived planetary series and the
-            Meeus/ELP lunar theory. OrbitScale calls <code>HelioVector</code> for heliocentric planet
+            Meeus/ELP lunar theory. OrbitSpan calls <code>HelioVector</code> for heliocentric planet
             vectors, <code>GeoVector</code> for the Sun, and <code>GeoMoon</code> for the Moon, all in
             astronomical units on the equatorial J2000 frame.
           </p>
@@ -142,7 +142,7 @@ function SourcesPage() {
 
         <Section title="Scientific stance">
           <p>
-            OrbitScale reports gravitational effects that are real but extremely small at planetary
+            OrbitSpan reports gravitational effects that are real but extremely small at planetary
             distances. It makes no claim that this smallness by itself refutes astrology; the
             scientific issue is the absence of established evidence for the claimed causal or
             predictive effects on personality, luck, relationships, destiny or future events.

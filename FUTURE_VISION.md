@@ -1,14 +1,14 @@
-# OrbitScale — Future Vision & Phased Product Roadmap
+# OrbitSpan — Future Vision & Phased Product Roadmap
 
-> **Project Vision**: Transform OrbitScale into the world's most scientifically rigorous, visually stunning, and intuitively engaging 3D Solar System exploration platform — combining live ephemeris math, photorealistic rendering, interactive gravity physics, and human-scale intuition.
+> **Project Vision**: Transform OrbitSpan into the world's most scientifically rigorous, visually stunning, and intuitively engaging 3D Solar System exploration platform — combining live ephemeris math, photorealistic rendering, interactive gravity physics, and human-scale intuition.
 
 ---
 
 ## 🌟 Executive Summary & Core Objectives
 
-OrbitScale V1 established the scientific foundation: live ephemeris coordinates from `astronomy-engine` (VSOP87 series), exact Ecliptic J2000 frame alignment, true 3D orbital trajectories, Newtonian gravity calculations ($a = GM/r^2$, $F = ma$), and live Human-Scale transformations.
+OrbitSpan V1 established the scientific foundation: live ephemeris coordinates from `astronomy-engine` (VSOP87 series), exact Ecliptic J2000 frame alignment, true 3D orbital trajectories, Newtonian gravity calculations ($a = GM/r^2$, $F = ma$), and live Human-Scale transformations.
 
-The **Future Vision** elevates OrbitScale from a functional educational tool to an award-winning, state-of-the-art interactive space experience.
+The **Future Vision** elevates OrbitSpan from a functional educational tool to an award-winning, state-of-the-art interactive space experience.
 
 ---
 
