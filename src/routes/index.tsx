@@ -5,7 +5,6 @@ import { BodySelector } from "@/components/orbit/BodySelector";
 import { ModeSwitch } from "@/components/orbit/ModeSwitch";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { SceneHost } from "@/components/orbit/scene/SceneHost";
-import { useSolarSystemState } from "@/hooks/useSolarSystemState";
 import { useOrbitStore } from "@/store/useOrbitStore";
 import {
   ROUTE_SEO,
@@ -48,42 +47,87 @@ export const Route = createFileRoute("/")({
 
 function ModeNotice() {
   const viewMode = useOrbitStore((s) => s.viewMode);
+  const trueScaleUniverse = useOrbitStore((s) => s.trueScaleUniverse);
+  const setTrueScaleUniverse = useOrbitStore((s) => s.setTrueScaleUniverse);
+  const showLabels = useOrbitStore((s) => s.showLabels);
+  const setShowLabels = useOrbitStore((s) => s.setShowLabels);
+
   if (viewMode === "exploration") {
     return (
-      <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
-        Exploration mode: planet sizes are visually exaggerated and distances compressed for
-        readability.
-      </p>
+      <div className="glass-panel pointer-events-auto flex items-center justify-between gap-3 p-2.5 text-[11px] text-foreground backdrop-blur-md">
+        <span>
+          Exploration mode: planet sizes are visually exaggerated and distances compressed.
+        </span>
+        <button
+          type="button"
+          onClick={() => setShowLabels(!showLabels)}
+          className="shrink-0 cursor-pointer rounded border border-border/80 bg-secondary/80 px-2 py-0.5 text-[10px] font-mono text-secondary-foreground hover:bg-secondary transition-colors"
+        >
+          Labels: {showLabels ? "ON" : "OFF"}
+        </button>
+      </div>
     );
   }
   if (viewMode === "scientific") {
     return (
-      <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
-        Scientific mode: true relative sizes and distances. At this scale the planets are almost
-        invisible specks — that is the honest picture of the Solar System.
-      </p>
+      <div className="glass-panel pointer-events-auto space-y-1.5 p-2.5 text-[11px] text-foreground backdrop-blur-md">
+        <div className="flex items-center justify-between gap-2">
+          <span className="font-semibold text-primary">
+            {trueScaleUniverse ? "100% Real Universe Scale" : "Scientific Mode (Overview)"}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowLabels(!showLabels)}
+              className="cursor-pointer rounded border border-border/80 bg-secondary/80 px-2 py-0.5 text-[10px] font-mono text-secondary-foreground hover:bg-secondary transition-colors"
+              title="Toggle labels"
+            >
+              Labels: {showLabels ? "ON" : "OFF"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTrueScaleUniverse(!trueScaleUniverse)}
+              className="cursor-pointer rounded border border-primary/50 bg-primary/20 px-2 py-0.5 text-[10px] font-mono text-primary-foreground hover:bg-primary/30 transition-colors"
+            >
+              {trueScaleUniverse ? "Overview" : "100% Real"}
+            </button>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground leading-relaxed">
+          {trueScaleUniverse
+            ? "Exact 1:1 physical radii & orbital distances. Earth is 3.67× larger than Moon at 60 Earth radii. Labels auto-fade on close inspection."
+            : "True orbital distances with visible planet minimum sizes. Toggle 100% Real for pure physical scale."}
+        </p>
+      </div>
     );
   }
   return (
-    <p className="glass-panel px-3 py-2 text-[11px] text-foreground">
-      Human-scale mode: the 3D view keeps a readable layout. Open{" "}
-      <span className="text-primary">Human Scale</span> for the measured model distances.
-    </p>
+    <div className="glass-panel pointer-events-auto flex items-center justify-between gap-3 p-2.5 text-[11px] text-foreground backdrop-blur-md">
+      <span>
+        Human-scale mode: 3D view keeps a readable layout. See{" "}
+        <span className="text-primary font-medium">Human Scale</span> tab for measured model.
+      </span>
+      <button
+        type="button"
+        onClick={() => setShowLabels(!showLabels)}
+        className="shrink-0 cursor-pointer rounded border border-border/80 bg-secondary/80 px-2 py-0.5 text-[10px] font-mono text-secondary-foreground hover:bg-secondary transition-colors"
+      >
+        Labels: {showLabels ? "ON" : "OFF"}
+      </button>
+    </div>
   );
 }
 
 function ExplorerPage() {
-  const state = useSolarSystemState();
-
   return (
     <div className="relative flex flex-col lg:h-[calc(100vh-3.5rem)] lg:flex-row">
       <div className="relative h-[52vh] min-h-[320px] w-full border-b border-border/60 lg:h-full lg:flex-1 lg:border-b-0">
         <SceneHost />
-        <div className="pointer-events-none absolute top-3 left-3 max-w-xs">
+        <div className="absolute top-3 left-3 max-w-xs sm:max-w-sm z-20">
           <ModeNotice />
         </div>
         <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-          Drag to orbit · scroll to zoom · tap a body to focus
+          Drag to orbit · scroll to zoom · tap any body/label to focus
         </p>
       </div>
 
@@ -93,7 +137,7 @@ function ExplorerPage() {
           <ModeSwitch />
           <TimeControls />
           <BodySelector />
-          <BodyReadout state={state} />
+          <BodyReadout />
         </div>
         <div className="border-t border-border/40 pt-4 mt-6 text-[10px] leading-relaxed text-muted-foreground">
           <span className="font-semibold text-foreground uppercase tracking-wider block mb-1">Education Note</span>

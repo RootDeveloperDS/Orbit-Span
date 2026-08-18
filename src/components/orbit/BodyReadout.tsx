@@ -1,7 +1,7 @@
 import { BODIES } from "@/lib/orbit/constants";
-import type { SolarSystemState } from "@/lib/orbit/ephemeris";
 import { EARTH_SURFACE_G, computeGravity, formatDistance, formatNumber } from "@/lib/orbit/physics";
 import { useOrbitStore } from "@/store/useOrbitStore";
+import { useSolarSystemState } from "@/hooks/useSolarSystemState";
 
 import { SciValue } from "./SciValue";
 
@@ -14,9 +14,16 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   );
 }
 
-export function BodyReadout({ state }: { state: SolarSystemState }) {
+/**
+ * Reads its own astronomical state from the store via useSolarSystemState so the
+ * parent ExplorerPage doesn't need to call computeSolarSystemState separately.
+ * This avoids running the ephemeris computation twice per tick.
+ */
+export function BodyReadout() {
   const selectedBody = useOrbitStore((s) => s.selectedBody);
   const observerMassKg = useOrbitStore((s) => s.observerMassKg);
+  const state = useSolarSystemState();
+
   const meta = BODIES[selectedBody];
   const bodyState = state.bodies[selectedBody];
   const isEarth = selectedBody === "earth";

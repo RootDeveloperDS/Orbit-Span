@@ -4,9 +4,10 @@
 
 An interactive astrophysics and orbital scale engine that calculates real planetary positions, true Newtonian gravitational pull on the human body, and translates cosmic distances into intuitive, human-scale physical benchmarks.
 
-🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)**
+🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.2.0)](CHANGELOG.md)**
 
 [![Open Source Love](https://img.shields.io/badge/Open%20Source-100%25-brightgreen.svg)](https://github.com/RootDeveloperDS/Orbit-Span)
+[![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)](https://react.dev/)
@@ -112,15 +113,20 @@ $$\text{Force: } F = m_{\text{observer}} \cdot a \quad [\text{N}]$$
 
 ## 🌟 Core Features
 
-- 🪐 **Real Ephemeris 3D Engine**: Live planetary orbits computed via the VSOP87 planetary series and Meeus/ELP lunar theory (via Astronomy Engine).
-- 🕒 **UTC Simulation Timeline**: Full scrubbable timeline with forward/reverse playback, real-time speed multipliers ($1\times$ to $1000\times$), step navigation, and a canonical UTC clock.
-- 🔭 **Three Rendering Modes**:
-  1. **Scientific / Real-Scale Mode**: True relative planetary radii and astronomical distances.
-  2. **Exploration Mode**: Mathematically compressed distances with enlarged planetary meshes for interactive clarity.
-  3. **Human-Scale Mode**: Physical real-world distance translation cards.
+- 🪐 **Real Ephemeris 3D Engine**: Live planetary orbits computed via the VSOP87 analytical series and Meeus/ELP lunar theory (via Astronomy Engine).
+- 🌌 **100% Real Universe Scale Mode**: Uncompromised 1:1 physical planetary radii and true astronomical distances with Earth-to-Moon diameter ratio of $3.667:1$ and lunar orbit distance of $60.33\times$ Earth radii.
+- 🌙 **Universal Lunar Orbit Ring**: Continuous 3D geocentric lunar orbit visualization dynamically tracked around Earth across all scale modes.
+- 🕒 **UTC Simulation Timeline**: Full scrubbable timeline with forward/reverse playback ($1\text{ h/s}$ to $1\text{ yr/s}$), step navigation, and a canonical UTC clock.
+- 🔭 **Four Rendering Perspectives**:
+  1. **100% Real Universe Scale**: Absolute 1:1 physical sizing and true astronomical orbital voids.
+  2. **Scientific Mode (Overview)**: True orbital distances with minimum visible body thresholds for broad system scanning.
+  3. **Exploration Mode**: Mathematically compressed distances with enlarged planetary meshes for interactive clarity.
+  4. **Human-Scale Mode**: Physical real-world distance translation benchmarks.
+- 🎥 **Zero-Lag Planet Tracking & Logarithmic Depth Camera**: Smooth orbital camera lock-on with dynamic near-clipping adjustments for zero-clipping surface inspection.
+- 🏷️ **Smart Distance-Adaptive 3D Labels**: Floating spatial name badges that auto-fade when zooming in close to keep planetary surfaces unobstructed.
 - ⚖️ **Interactive Gravity Lab**: Live gravitational force, acceleration, Earth percentage comparisons, and logarithmic force spectrum visualizations (via Recharts).
 - 🔬 **Science & Methodology Library**: Transparent mathematical documentation of constant derivations, inverse-square laws, acceleration vs. force, and coordinate systems.
-- 📴 **Offline-First PWA**: Service worker shell architecture that caches simulation algorithms, ephemerides, and assets for 100% offline functionality.
+- 📴 **Offline-First PWA (v2)**: Service worker shell architecture that caches simulation algorithms, ephemerides, and assets for 100% offline functionality.
 - ♿ **Adaptive Performance Mode**: Hardware-aware reduced effects toggle for smooth 60fps rendering across low-power mobile GPUs.
 
 ---
@@ -168,7 +174,7 @@ flowchart TD
 | **State Management** | Zustand 5 | Decoupled high-frequency simulation state management |
 | **Styling & UI** | Tailwind CSS v4, Radix UI, Lucide Icons | Responsive glassmorphic observatory design system |
 | **Visualizations** | Recharts 2 | Responsive logarithmic gravitational force charts |
-| **PWA & Offline** | Service Worker Cache API | Instant offline accessibility & static asset caching |
+| **PWA & Offline** | Service Worker Cache API (`v2`) | Instant offline accessibility & static asset caching |
 | **Bundling & Testing**| Vite 8, Vitest, ESLint | Sub-second HMR builds & unit test validation |
 
 ---
@@ -181,7 +187,7 @@ Scientific integrity requires transparency regarding assumptions and approximati
 2. **Point-Mass Center-to-Center Approximation**: Distances $r$ are measured from Earth's center to the target body's center. The $\approx 6,371\text{ km}$ radius of Earth is negligible at planetary distances ($> 38,000,000\text{ km}$).
 3. **Absolute Acceleration vs. Local Inertial Frame**: The Gravity Lab calculates the *absolute gravitational acceleration* exerted by a body at Earth's orbital distance. Because Earth and the observer are in mutual free-fall around the Sun, the *felt tidal force* on a human body is differential ($\propto \frac{1}{r^3}$) and vastly smaller than the raw acceleration ($\propto \frac{1}{r^2}$).
 4. **Exploration Mode Distances**: Exploration Mode deliberately applies a non-linear compression function to distances and magnifies planetary radii so that bodies remain clickable and visible on a screen.
-5. **Circular Ring Approximations**: Visualized orbit rings are drawn at mean semi-major axes ($a$); individual planet positions follow their true Keplerian eccentricities.
+5. **Circular Ring Approximations**: Exploration mode orbit rings are drawn at mean semi-major axes; Scientific mode orbit splines calculate the exact 3D Keplerian trajectory.
 
 ---
 
@@ -227,22 +233,28 @@ bun run preview
 
 ## 🗺️ Product Roadmap
 
-- [x] **V1.0 (Current Stable)**: 
+- [x] **V1.0 (Core Engine)**: 
   - Live VSOP87 3D Solar System simulation.
   - Scientific, Exploration, and Human-Scale rendering modes.
   - Complete Gravity Lab with configurable observer mass.
   - Offline PWA service worker caching.
   - Scientific & methodology documentation.
-- [ ] **V1.1 (Phase 1)**:
-  - Logarithmic depth buffer camera zoom for zero-clipping planet inspection.
-  - High-resolution PBR surface maps and atmospheric rim scattering shaders.
-- [ ] **V1.2 (Phase 2)**:
+- [x] **V1.1 (Simulation Time & Precision)**:
+  - Interactive UTC simulation timeline with forward/reverse warp ($1\text{ h/s}$ to $1\text{ yr/s}$).
+  - Logarithmic depth buffer camera zoom for zero-clipping close-up planet inspection.
+  - Procedural Earth cloud layers and Saturn ring systems.
+- [x] **V1.2 (100% Real Universe Scale & Orbit Synchronization)**:
+  - Uncompromised 1:1 physical scale mode (Earth $3.667\times$ Moon diameter, Moon at $60.33\times$ Earth radii).
+  - High-resolution 256/128-segment orbital trajectory splines with live precession synchronization.
+  - Smart distance-adaptive non-obtrusive 3D labels.
+  - Decoupled camera tracking rig with zero WebGL frame flicker.
+- [ ] **V1.3 (Phase 3)**:
   - 5,000+ instanced Main Asteroid Belt objects (`THREE.InstancedMesh`).
   - Live astronomical event scanner (oppositions, conjunctions, eclipses).
-- [ ] **V1.3 (Phase 3)**:
+- [ ] **V1.4 (Phase 4)**:
   - Interactive RK4 N-body gravity spacecraft slingshot sandbox.
   - Differential tidal force & Roche limit inspector.
-- [ ] **V2.0 (Phase 4)**:
+- [ ] **V2.0 (Spatial Computing)**:
   - WebXR spatial computing support (Apple Vision Pro / Meta Quest VR mode).
   - AR Tabletop Mode for projecting the 10 cm Human-Scale Earth onto physical desks.
 
@@ -283,6 +295,7 @@ Built with passion and scientific curiosity by **Devansh Sharma**.
 
 ---
 
-## 📄 License
+## 📄 License & Version History
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+* This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+* See [CHANGELOG.md](CHANGELOG.md) for full version history and detailed release notes.

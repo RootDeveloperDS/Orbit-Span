@@ -84,11 +84,12 @@ export const ORBITAL_PERIOD_DAYS: Record<Exclude<BodyId, "sun" | "moon">, number
 
 /**
  * Sample a planet's actual 3D ecliptic trajectory over 1 orbital period.
+ * Vertex 0 is precisely at the planet's instantaneous position at epochMs.
  */
 export function computePlanetOrbitPathEcl(
   id: Exclude<BodyId, "sun" | "moon">,
   epochMs: number,
-  segments = 96,
+  segments = 256,
 ): Vec3[] {
   const periodDays = ORBITAL_PERIOD_DAYS[id];
   const periodMs = periodDays * 86400 * 1000;
@@ -100,6 +101,29 @@ export function computePlanetOrbitPathEcl(
     const date = new Date(t);
     const helioEq = vec(HelioVector(engineBody, date));
     points.push(eqToEcl(helioEq));
+  }
+
+  return points;
+}
+
+/**
+ * Sample the Moon's geocentric 3D ecliptic trajectory around Earth over 1 lunar sidereal period (~27.32 days).
+ * Vertex 0 is precisely at the Moon's instantaneous offset from Earth at epochMs.
+ * Returns offset vectors relative to Earth's centre in AU.
+ */
+export function computeMoonOrbitPathEcl(
+  epochMs: number,
+  segments = 128,
+): Vec3[] {
+  const periodDays = 27.32166;
+  const periodMs = periodDays * 86400 * 1000;
+  const points: Vec3[] = [];
+
+  for (let i = 0; i <= segments; i++) {
+    const t = epochMs + (i / segments) * periodMs;
+    const date = new Date(t);
+    const moonGeoEq = vec(GeoMoon(date));
+    points.push(eqToEcl(moonGeoEq));
   }
 
   return points;
@@ -163,4 +187,3 @@ export function lerpVec(a: Vec3, b: Vec3, t: number): Vec3 {
 export function earthDistanceM(state: SolarSystemState, id: BodyId): number {
   return state.bodies[id].distanceFromEarthM;
 }
-

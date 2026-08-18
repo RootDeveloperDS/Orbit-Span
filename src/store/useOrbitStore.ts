@@ -11,6 +11,10 @@ export interface OrbitState {
   /** Simulated seconds per real second. 0 = paused. */
   playbackRate: number;
   viewMode: ViewMode;
+  /** When true in Scientific mode, uses 100% mathematically exact physical radii and real cosmic ratios. */
+  trueScaleUniverse: boolean;
+  /** Toggle visibility of floating 3D planet names and beacons. */
+  showLabels: boolean;
   selectedBody: BodyId;
   observerMassKg: number;
   earthReference: EarthReferencePreset;
@@ -23,6 +27,8 @@ export interface OrbitState {
   now: () => void;
   setPlaybackRate: (rate: number) => void;
   setViewMode: (mode: ViewMode) => void;
+  setTrueScaleUniverse: (enabled: boolean) => void;
+  setShowLabels: (show: boolean) => void;
   selectBody: (id: BodyId) => void;
   setObserverMassKg: (kg: number) => void;
   setEarthReference: (ref: EarthReferencePreset) => void;
@@ -43,6 +49,8 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   epochMs: Date.now(),
   playbackRate: 0,
   viewMode: "exploration",
+  trueScaleUniverse: false,
+  showLabels: true,
   selectedBody: "sun",
   observerMassKg: 70,
   earthReference: "10cm",
@@ -53,6 +61,8 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   now: () => set({ epochMs: Date.now() }),
   setPlaybackRate: (rate) => set({ playbackRate: rate }),
   setViewMode: (mode) => set({ viewMode: mode }),
+  setTrueScaleUniverse: (enabled) => set({ trueScaleUniverse: enabled }),
+  setShowLabels: (show) => set({ showLabels: show }),
   selectBody: (id) => set({ selectedBody: id }),
   setObserverMassKg: (kg) => set({ observerMassKg: Number.isFinite(kg) ? kg : 70 }),
   setEarthReference: (ref) => set({ earthReference: ref }),

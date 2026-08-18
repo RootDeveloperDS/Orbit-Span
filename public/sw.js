@@ -1,7 +1,7 @@
 /* OrbitSpan service worker: app-shell + static asset cache.
    Deliberately conservative — never caches API traffic (there is none) and
    always falls back to the network. */
-const CACHE = "orbitspan-v1";
+const CACHE = "orbitspan-v2";
 const SHELL = [
   "/",
   "/gravity-lab",
