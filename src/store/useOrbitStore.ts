@@ -5,6 +5,8 @@ import type { EarthReferencePreset } from "@/lib/orbit/scale";
 
 export type ViewMode = "scientific" | "exploration" | "human";
 
+export type AnySelectableId = string;
+
 export interface OrbitState {
   /** Canonical simulation instant, UTC milliseconds. */
   epochMs: number;
@@ -15,7 +17,13 @@ export interface OrbitState {
   trueScaleUniverse: boolean;
   /** Toggle visibility of floating 3D planet names and beacons. */
   showLabels: boolean;
-  selectedBody: BodyId;
+  /** Layer toggles for Asteroid Belt, Kuiper Belt, Moons, and Spacecraft. */
+  showAsteroidBelt: boolean;
+  showKuiperBelt: boolean;
+  showMoons: boolean;
+  showMoonOrbits: boolean;
+  showSpacecraft: boolean;
+  selectedBody: BodyId | AnySelectableId;
   observerMassKg: number;
   earthReference: EarthReferencePreset;
   /** Custom Earth reference diameter in metres (used when earthReference === "custom"). */
@@ -29,7 +37,12 @@ export interface OrbitState {
   setViewMode: (mode: ViewMode) => void;
   setTrueScaleUniverse: (enabled: boolean) => void;
   setShowLabels: (show: boolean) => void;
-  selectBody: (id: BodyId) => void;
+  setShowAsteroidBelt: (show: boolean) => void;
+  setShowKuiperBelt: (show: boolean) => void;
+  setShowMoons: (show: boolean) => void;
+  setShowMoonOrbits: (show: boolean) => void;
+  setShowSpacecraft: (show: boolean) => void;
+  selectBody: (id: BodyId | AnySelectableId) => void;
   setObserverMassKg: (kg: number) => void;
   setEarthReference: (ref: EarthReferencePreset) => void;
   setCustomEarthDiameterM: (m: number) => void;
@@ -51,6 +64,11 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   viewMode: "exploration",
   trueScaleUniverse: false,
   showLabels: true,
+  showAsteroidBelt: true,
+  showKuiperBelt: true,
+  showMoons: true,
+  showMoonOrbits: true,
+  showSpacecraft: true,
   selectedBody: "sun",
   observerMassKg: 70,
   earthReference: "10cm",
@@ -63,6 +81,11 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   setViewMode: (mode) => set({ viewMode: mode }),
   setTrueScaleUniverse: (enabled) => set({ trueScaleUniverse: enabled }),
   setShowLabels: (show) => set({ showLabels: show }),
+  setShowAsteroidBelt: (show) => set({ showAsteroidBelt: show }),
+  setShowKuiperBelt: (show) => set({ showKuiperBelt: show }),
+  setShowMoons: (show) => set({ showMoons: show }),
+  setShowMoonOrbits: (show) => set({ showMoonOrbits: show }),
+  setShowSpacecraft: (show) => set({ showSpacecraft: show }),
   selectBody: (id) => set({ selectedBody: id }),
   setObserverMassKg: (kg) => set({ observerMassKg: Number.isFinite(kg) ? kg : 70 }),
   setEarthReference: (ref) => set({ earthReference: ref }),

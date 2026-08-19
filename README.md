@@ -4,10 +4,10 @@
 
 An interactive astrophysics and orbital scale engine that calculates real planetary positions, true Newtonian gravitational pull on the human body, and translates cosmic distances into intuitive, human-scale physical benchmarks.
 
-🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.2.0)](CHANGELOG.md)**
+🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.3.0)](CHANGELOG.md)**
 
 [![Open Source Love](https://img.shields.io/badge/Open%20Source-100%25-brightgreen.svg)](https://github.com/RootDeveloperDS/Orbit-Span)
-[![Version: 1.2.0](https://img.shields.io/badge/Version-1.2.0-blue.svg)](CHANGELOG.md)
+[![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)](https://react.dev/)
@@ -248,15 +248,24 @@ bun run preview
   - High-resolution 256/128-segment orbital trajectory splines with live precession synchronization.
   - Smart distance-adaptive non-obtrusive 3D labels.
   - Decoupled camera tracking rig with zero WebGL frame flicker.
-- [ ] **V1.3 (Phase 3)**:
-  - 5,000+ instanced Main Asteroid Belt objects (`THREE.InstancedMesh`).
-  - Live astronomical event scanner (oppositions, conjunctions, eclipses).
-- [ ] **V1.4 (Phase 4)**:
-  - Interactive RK4 N-body gravity spacecraft slingshot sandbox.
-  - Differential tidal force & Roche limit inspector.
-- [ ] **V2.0 (Spatial Computing)**:
-  - WebXR spatial computing support (Apple Vision Pro / Meta Quest VR mode).
-  - AR Tabletop Mode for projecting the 10 cm Human-Scale Earth onto physical desks.
+- [x] **Phase 2 (Minor Bodies, Planetary Moons & Spacecraft)**:
+  - 5,000+ instanced Main Asteroid Belt & Kuiper Belt objects (`THREE.InstancedMesh`).
+  - 18+ major planetary moons (Galilean Moons, Titan, Triton, Charon) with Laplace resonance.
+  - Smart distance-adaptive moon orbit lines fading in on zoom.
+  - Minor bodies (Ceres, Vesta, Pallas, Pluto) and Comet 1P/Halley with dynamic outgassing tail.
+  - Historic spacecraft trajectories (Voyager 1/2, New Horizons, JWST at L2).
+- [ ] **Phase 3 (Live Celestial Event Engine & Time Warp)**:
+  - Automated celestial event scanner (conjunctions, eclipses, transits, oppositions).
+  - One-click "Jump to Event" interactive timeline bar with camera alignment.
+- [ ] **Phase 4 (Interactive N-Body Gravity Sandbox & Slingshot Lab)**:
+  - Interactive RK4 numerical integrator for custom probe launches and orbital slingshot assists.
+  - Roche limit boundary visualization and differential tidal stretch inspector.
+- [ ] **Phase 5 (Cinematic Guided Tour & Cosmic Audio Synthesizer)**:
+  - Guided fly-by tour with narrated mission facts and smooth camera spline paths.
+  - Web Audio procedural drone synth & spatialized NASA plasma acoustic emitters.
+- [ ] **Phase 6 (WebXR Spatial Computing & Tabletop AR)**:
+  - Full 360° 6DoF WebXR VR exploration on Meta Quest & Vision Pro.
+  - WebXR Tabletop AR mode projecting the Human-Scale solar system onto real-world surfaces.
 
 ---
 

@@ -13,53 +13,81 @@ function SceneFallback({ message }: { message: string }) {
 
 interface ErrorBoundaryState {
   failed: boolean;
-  errorMessage: string;
   retryKey: number;
+  retryCount: number;
 }
 
 class SceneErrorBoundary extends Component<
   { children: ReactNode },
   ErrorBoundaryState
 > {
-  override state: ErrorBoundaryState = { failed: false, errorMessage: "", retryKey: 0 };
+  override state: ErrorBoundaryState = { failed: false, retryKey: 0, retryCount: 0 };
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-  static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
-    return { failed: true, errorMessage: error?.message ?? "Unknown render error" };
+  static getDerivedStateFromError(): Partial<ErrorBoundaryState> {
+    return { failed: true };
   }
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error("3D scene failed:", error.message, info.componentStack);
+    // Silent — only log to console, never block the user
+    console.error("[OrbitSpan 3D] Scene error caught (auto-recovering):", error.message);
+    console.error("[OrbitSpan 3D] Component stack:", info.componentStack);
+
+    // Auto-retry after 1.5s (max 5 attempts then give up gracefully)
+    if (this.state.retryCount < 5) {
+      this.retryTimer = setTimeout(() => {
+        this.setState((s) => ({
+          failed: false,
+          retryKey: s.retryKey + 1,
+          retryCount: s.retryCount + 1,
+        }));
+      }, 1500);
+    }
   }
 
-  handleRetry = () => {
-    this.setState((s) => ({ failed: false, errorMessage: "", retryKey: s.retryKey + 1 }));
+  override componentWillUnmount() {
+    if (this.retryTimer) clearTimeout(this.retryTimer);
+  }
+
+  handleManualRetry = () => {
+    if (this.retryTimer) clearTimeout(this.retryTimer);
+    this.setState((s) => ({
+      failed: false,
+      retryKey: s.retryKey + 1,
+      retryCount: 0,
+    }));
   };
 
   override render() {
     if (this.state.failed) {
-      const isWebGLError =
-        this.state.errorMessage.toLowerCase().includes("webgl") ||
-        this.state.errorMessage.toLowerCase().includes("context");
-
-      return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-space-deep p-8">
-          <p className="max-w-sm text-center text-sm text-muted-foreground">
-            {isWebGLError
-              ? "The 3D view could not start on this device — WebGL may be unavailable or disabled. Distances, gravity and human-scale figures still work in the panels and on the other pages."
-              : "The 3D view encountered an error. You can try reloading it."}
-          </p>
-          {!isWebGLError && (
+      // Exhausted auto-retries — show minimal non-blocking message
+      if (this.state.retryCount >= 5) {
+        return (
+          <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-space-deep p-8">
+            <p className="max-w-sm text-center text-sm text-muted-foreground">
+              The 3D scene could not be rendered on this device. All astronomy and distance
+              calculations are still available in the side panels.
+            </p>
             <button
               type="button"
-              onClick={this.handleRetry}
+              onClick={this.handleManualRetry}
               className="rounded-md border border-primary/40 bg-primary/10 px-4 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/20"
             >
-              Try Again
+              Try Once More
             </button>
-          )}
+          </div>
+        );
+      }
+      // During auto-retry grace period: show nothing, just a faint placeholder
+      return (
+        <div className="flex h-full w-full items-center justify-center bg-space-deep">
+          <p className="text-xs text-muted-foreground/40 animate-pulse">
+            Restarting 3D view…
+          </p>
         </div>
       );
     }
+
     // key forces a full remount on retry, resetting all WebGL/Three state cleanly.
     return (
       <div key={this.state.retryKey} style={{ display: "contents" }}>
@@ -68,6 +96,7 @@ class SceneErrorBoundary extends Component<
     );
   }
 }
+
 
 /**
  * Robust WebGL availability check.

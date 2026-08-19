@@ -4,12 +4,17 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three";
 
 import { BODIES, type BodyId } from "@/lib/orbit/constants";
+import { MOONS, type MoonId, computeMoonPositionRelative } from "@/lib/orbit/moons";
+import { MINOR_BODIES, computeKeplerianPositionAu, type MinorBodyId } from "@/lib/orbit/minorBodies";
+import { SPACECRAFT, computeJWSTL2ScenePosition, computeSpacecraftTrajectory, type SpacecraftId } from "@/lib/orbit/spacecraft";
 import type { SolarSystemState } from "@/lib/orbit/ephemeris";
 import {
   computeRelativeMoonOrbitPath,
   computeOrbitPaths,
   focusDistance,
   layoutSolarSystem,
+  toSceneAxes,
+  SCIENTIFIC_UNITS_PER_AU,
   type LayoutMode,
   type PlacedBody,
 } from "@/lib/orbit/sceneLayout";
@@ -20,6 +25,12 @@ import {
 } from "@/lib/orbit/textures";
 import { useOrbitStore, type ViewMode } from "@/store/useOrbitStore";
 import { usePlaybackClock, useSolarSystemState } from "@/hooks/useSolarSystemState";
+
+import { PlanetMoonSystem } from "./PlanetaryMoons";
+import { AsteroidBelt } from "./AsteroidBelt";
+import { KuiperBelt } from "./KuiperBelt";
+import { MinorBodiesScene } from "./MinorBodiesScene";
+import { SpacecraftScene } from "./SpacecraftScene";
 
 /** Stable 3D trajectory line that does not thrash WebGL buffers on every tick. */
 const StableOrbitLine = React.memo(function StableOrbitLine({
@@ -92,13 +103,9 @@ interface BodyProps {
   placed: PlacedBody;
   selected: boolean;
   showLabel: boolean;
-  onSelect: (id: BodyId) => void;
+  onSelect: (id: string) => void;
   viewMode: ViewMode;
   trueScaleUniverse: boolean;
-  /**
-   * A stable ref that receives a THREE.Vector3 with the body's live scene position.
-   * Updated every useFrame — no React re-render triggered.
-   */
   livePositionRef?: React.RefObject<THREE.Vector3>;
 }
 
@@ -113,7 +120,6 @@ const BodyMesh = React.memo(function BodyMesh({
 }: BodyProps) {
   const groupRef = useRef<THREE.Group>(null);
   const cloudRef = useRef<THREE.Mesh>(null);
-  // Keep a mutable target that never triggers re-renders
   const target = useRef(new THREE.Vector3(placed.position.x, placed.position.y, placed.position.z));
   const meta = BODIES[placed.id];
   const isSun = placed.id === "sun";
@@ -124,7 +130,7 @@ const BodyMesh = React.memo(function BodyMesh({
   const [isCloseUp, setIsCloseUp] = useState(false);
   useCursor(hovered);
 
-  const handlePointerOver = useCallback((e: THREE.Event) => {
+  const handlePointerOver = useCallback((e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     setHovered(true);
   }, []);
@@ -140,21 +146,17 @@ const BodyMesh = React.memo(function BodyMesh({
     [isSaturn],
   );
 
-  // Synchronously update the lerp target — no setState, no re-render.
   target.current.set(placed.position.x, placed.position.y, placed.position.z);
 
   useFrame(({ camera }, delta) => {
     const group = groupRef.current;
     if (group) {
-      // Smooth live-clock samples between ephemeris updates without forcing React/WebGL work per frame.
       group.position.lerp(target.current, 1 - Math.exp(-14 * delta));
 
-      // Expose live position to other scene objects (e.g. LunarOrbitRing) via ref.
       if (livePositionRef) {
         livePositionRef.current?.copy(group.position);
       }
 
-      // Check distance to camera for smart non-intrusive label behavior
       const dist = camera.position.distanceTo(group.position);
       const close = dist < placed.radius * 7.5;
       if (close !== isCloseUp) {
@@ -173,7 +175,6 @@ const BodyMesh = React.memo(function BodyMesh({
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Position label cleanly above the body
   const labelOffsetY =
     viewMode === "scientific"
       ? trueScaleUniverse
@@ -275,130 +276,197 @@ const BodyMesh = React.memo(function BodyMesh({
       )}
 
       {/* Smart, Non-Obtrusive 3D Spatial Name Label */}
-      {showLabel && (
-        <Html
-          center
-          position={[0, labelOffsetY, 0]}
-          style={{ pointerEvents: "auto" }}
-          zIndexRange={[10, 0]}
+      <Html
+        center
+        position={[0, labelOffsetY, 0]}
+        style={{
+          pointerEvents: showLabel ? "auto" : "none",
+          opacity: showLabel ? 1 : 0,
+          transition: "opacity 0.2s ease",
+        }}
+        zIndexRange={[10, 0]}
+      >
+        <div
+          className={`transition-all duration-200 ${
+            isCloseUp && !hovered && !selected
+              ? "opacity-20 hover:opacity-100"
+              : isCloseUp && selected && !hovered
+                ? "opacity-60 hover:opacity-100"
+                : "opacity-100"
+          }`}
         >
-          <div
-            className={`transition-all duration-200 ${
-              isCloseUp && !hovered && !selected
-                ? "opacity-20 hover:opacity-100"
-                : isCloseUp && selected && !hovered
-                  ? "opacity-60 hover:opacity-100"
-                  : "opacity-100"
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onSelect(placed.id);
+            }}
+            className={`cursor-pointer select-none whitespace-nowrap rounded px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] tracking-[0.12em] uppercase transition-all duration-150 shadow-sm ${
+              selected
+                ? "border border-primary/70 bg-primary/40 text-foreground shadow-primary/30"
+                : hovered
+                  ? "border border-foreground/40 bg-background/90 text-foreground"
+                  : "border border-border/40 bg-background/50 text-muted-foreground backdrop-blur-[2px] hover:text-foreground"
             }`}
+            title={`Select and zoom to ${meta.name}`}
           >
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onSelect(placed.id);
-              }}
-              className={`cursor-pointer select-none whitespace-nowrap rounded px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] tracking-[0.12em] uppercase transition-all duration-150 shadow-sm ${
-                selected
-                  ? "border border-primary/70 bg-primary/40 text-foreground shadow-primary/30"
-                  : hovered
-                    ? "border border-foreground/40 bg-background/90 text-foreground"
-                    : "border border-border/40 bg-background/50 text-muted-foreground backdrop-blur-[2px] hover:text-foreground"
-              }`}
-              title={`Select and zoom to ${meta.name}`}
-            >
-              {meta.name}
-            </button>
-          </div>
-        </Html>
-      )}
+            {meta.name}
+          </button>
+        </div>
+      </Html>
     </group>
   );
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CameraRig — KEY FIX:
-//   placedBodies is stored in a ref so its identity changes (every 125ms during
-//   playback) do NOT trigger the position-snap useEffect.
-//   The snap fires ONLY when selectedBody / viewMode / trueScaleUniverse change.
+// CameraRig — Universal Target Tracking (Planets, Moons, Minor Bodies, Probes)
 // ─────────────────────────────────────────────────────────────────────────────
 function CameraRig({
   placedBodies,
   selectedBody,
   viewMode,
   trueScaleUniverse,
+  epochMs,
 }: {
   placedBodies: PlacedBody[];
-  selectedBody: BodyId;
+  selectedBody: string;
   viewMode: ViewMode;
   trueScaleUniverse: boolean;
+  epochMs: number;
 }) {
   const controls = useRef<React.ComponentRef<typeof OrbitControls>>(null);
   const { camera } = useThree();
-  const prevSelected = useRef<BodyId | null>(null);
+  const prevSelected = useRef<string | null>(null);
   const desiredFocusPos = useRef(new THREE.Vector3());
   const smoothedFocusPos = useRef(new THREE.Vector3());
   const focusStep = useRef(new THREE.Vector3());
   const isFirstFrame = useRef(true);
 
-  // *** THE FIX: store placedBodies in a ref — updated synchronously on every
-  // render but NEVER listed as a useEffect dependency, so position updates
-  // during playback (every 125ms) do NOT re-trigger the camera snap. ***
   const placedRef = useRef(placedBodies);
   placedRef.current = placedBodies;
 
-  // Snap camera ONLY when the selected body or view mode changes.
-  useEffect(() => {
-    const focus = placedRef.current.find((b) => b.id === selectedBody);
-    if (!focus) return;
+  const getFocusTarget = useCallback((): { pos: THREE.Vector3; focusDist: number; minNear: number } => {
+    // 1. Standard Planet Focus
+    const planet = placedRef.current.find((b) => b.id === selectedBody);
+    if (planet) {
+      const dist = focusDistance(planet, viewMode, trueScaleUniverse);
+      return {
+        pos: new THREE.Vector3(planet.position.x, planet.position.y, planet.position.z),
+        focusDist: dist,
+        minNear: Math.max(1e-7, planet.radius * 0.01),
+      };
+    }
 
+    // 2. Moon Focus
+    if (selectedBody in MOONS) {
+      const moonMeta = MOONS[selectedBody as MoonId];
+      const parent = placedRef.current.find((b) => b.id === moonMeta.parentId);
+      if (parent) {
+        const { position, radius } = computeMoonPositionRelative(
+          selectedBody as MoonId,
+          epochMs,
+          viewMode,
+          trueScaleUniverse,
+          parent.radius,
+        );
+        const moonPos = new THREE.Vector3(
+          parent.position.x + position.x,
+          parent.position.y + position.y,
+          parent.position.z + position.z,
+        );
+        const dist = viewMode === "scientific" ? Math.max(radius * 5.0, 0.0008) : Math.max(radius * 4.0, 0.35);
+        return {
+          pos: moonPos,
+          focusDist: dist,
+          minNear: Math.max(1e-7, radius * 0.01),
+        };
+      }
+    }
+
+    // 3. Minor Body / Comet Focus
+    if (selectedBody in MINOR_BODIES) {
+      const mb = MINOR_BODIES[selectedBody as MinorBodyId];
+      const posAu = computeKeplerianPositionAu(mb.elements, epochMs);
+      let p: { x: number; y: number; z: number };
+      if (viewMode === "scientific") {
+        p = toSceneAxes(posAu, SCIENTIFIC_UNITS_PER_AU);
+      } else {
+        const d = Math.sqrt(posAu.x * posAu.x + posAu.y * posAu.y + posAu.z * posAu.z);
+        const s = d > 0 ? (Math.pow(d, 0.5) * 7) / d : 0;
+        p = toSceneAxes(posAu, s);
+      }
+      return {
+        pos: new THREE.Vector3(p.x, p.y, p.z),
+        focusDist: viewMode === "scientific" ? 0.08 : 0.8,
+        minNear: 1e-6,
+      };
+    }
+
+    // 4. Spacecraft Focus
+    if (selectedBody === "jwst") {
+      const earth = placedRef.current.find((b) => b.id === "earth");
+      if (earth) {
+        const { l2Pos } = computeJWSTL2ScenePosition(earth.position, viewMode, earth.radius);
+        return {
+          pos: new THREE.Vector3(l2Pos.x, l2Pos.y, l2Pos.z),
+          focusDist: viewMode === "scientific" ? 0.08 : 0.6,
+          minNear: 1e-6,
+        };
+      }
+    } else if (selectedBody in SPACECRAFT) {
+      const points = computeSpacecraftTrajectory(selectedBody as SpacecraftId, viewMode);
+      const tip = points[points.length - 1] || { x: 0, y: 0, z: 0 };
+      return {
+        pos: new THREE.Vector3(tip.x, tip.y, tip.z),
+        focusDist: viewMode === "scientific" ? 0.5 : 1.2,
+        minNear: 1e-6,
+      };
+    }
+
+    return { pos: new THREE.Vector3(0, 0, 0), focusDist: 15, minNear: 1e-6 };
+  }, [selectedBody, viewMode, trueScaleUniverse, epochMs]);
+
+  useEffect(() => {
+    const { pos, focusDist, minNear } = getFocusTarget();
     const c = controls.current;
-    const focusDist = focusDistance(focus, viewMode, trueScaleUniverse);
     const offset = new THREE.Vector3(focusDist * 0.7, focusDist * 0.5, focusDist * 0.85);
 
     if (prevSelected.current !== selectedBody || isFirstFrame.current) {
       prevSelected.current = selectedBody;
       isFirstFrame.current = false;
 
-      camera.position.set(
-        focus.position.x + offset.x,
-        focus.position.y + offset.y,
-        focus.position.z + offset.z,
-      );
+      camera.position.set(pos.x + offset.x, pos.y + offset.y, pos.z + offset.z);
 
       if (c) {
-        c.target.set(focus.position.x, focus.position.y, focus.position.z);
-        c.minDistance = Math.max(1e-7, focus.radius * 1.05);
+        c.target.copy(pos);
+        c.minDistance = Math.max(1e-7, minNear * 1.2);
         c.maxDistance = 10000;
         c.update();
       }
 
-      desiredFocusPos.current.set(focus.position.x, focus.position.y, focus.position.z);
-      smoothedFocusPos.current.copy(desiredFocusPos.current);
+      desiredFocusPos.current.copy(pos);
+      smoothedFocusPos.current.copy(pos);
 
       if (camera instanceof THREE.PerspectiveCamera) {
-        camera.near = Math.max(1e-7, focus.radius * 0.01);
+        camera.near = Math.max(1e-7, minNear);
         camera.far = viewMode === "scientific" ? 20000 : 2000;
         camera.updateProjectionMatrix();
       }
     }
-  // placedBodies intentionally NOT listed — we read from placedRef.current instead.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [camera, selectedBody, viewMode, trueScaleUniverse]);
 
-  // Frame update: dynamically track planet movement during simulation time playback.
   useFrame((_, delta) => {
     const c = controls.current;
     if (!c) return;
-    // Read live positions from ref — no re-render cost.
-    const focus = placedRef.current.find((b) => b.id === selectedBody);
-    if (!focus) return;
 
-    desiredFocusPos.current.set(focus.position.x, focus.position.y, focus.position.z);
+    const { pos, minNear } = getFocusTarget();
+    desiredFocusPos.current.copy(pos);
+
     focusStep.current
       .subVectors(desiredFocusPos.current, smoothedFocusPos.current)
       .multiplyScalar(1 - Math.exp(-14 * delta));
 
-    // Follow the same eased position stream as the bodies.
     if (focusStep.current.lengthSq() > 1e-12) {
       camera.position.add(focusStep.current);
       c.target.add(focusStep.current);
@@ -406,11 +474,10 @@ function CameraRig({
       c.update();
     }
 
-    // Dynamic precision near clipping check
     if (camera instanceof THREE.PerspectiveCamera) {
-      const minNear = Math.max(1e-7, focus.radius * 0.01);
-      if (Math.abs(camera.near - minNear) > 1e-8) {
-        camera.near = minNear;
+      const safeNear = Math.max(1e-7, minNear);
+      if (Math.abs(camera.near - safeNear) > 1e-8) {
+        camera.near = safeNear;
         camera.updateProjectionMatrix();
       }
     }
@@ -435,10 +502,10 @@ function Starfield({ count }: { count: number }) {
     const colorArray = new Float32Array(count * 3);
 
     const palette = [
-      new THREE.Color("#d8ecf8"), // Blue-white
-      new THREE.Color("#ffffff"), // White
-      new THREE.Color("#fff2cc"), // Warm yellow
-      new THREE.Color("#ffd2a1"), // Amber
+      new THREE.Color("#d8ecf8"),
+      new THREE.Color("#ffffff"),
+      new THREE.Color("#fff2cc"),
+      new THREE.Color("#ffd2a1"),
     ];
 
     for (let i = 0; i < count; i++) {
@@ -485,17 +552,16 @@ function SceneContents({ state }: { state: SolarSystemState }) {
   const selectBody = useOrbitStore((s) => s.selectBody);
   const performanceMode = useOrbitStore((s) => s.performanceMode);
   const playbackRate = useOrbitStore((s) => s.playbackRate);
-  const [orbitEpochMs, setOrbitEpochMs] = useState(state.epochMs);
+  const epochMs = useOrbitStore((s) => s.epochMs);
+  const [orbitEpochMs, setOrbitEpochMs] = useState(state?.epochMs ?? Date.now());
   const lastOrbitMode = useRef(viewMode);
 
-  // Orbit lines are static geometry while playback runs.  Rebuild them once
-  // after a paused/manual date change or a view-mode change—not every tick.
   useEffect(() => {
     if (lastOrbitMode.current !== viewMode || playbackRate === 0) {
       lastOrbitMode.current = viewMode;
       setOrbitEpochMs((current) => (current === state.epochMs ? current : state.epochMs));
     }
-  }, [playbackRate, state.epochMs, viewMode]);
+  }, [playbackRate, state?.epochMs, viewMode]);
 
   const orbitPaths = useMemo(
     () => computeOrbitPaths(viewMode, orbitEpochMs),
@@ -509,19 +575,18 @@ function SceneContents({ state }: { state: SolarSystemState }) {
 
   const adjusted = useMemo(() => {
     if (viewMode === "scientific") return placed;
-    // Offset the Moon so it is visible next to Earth in the compressed layouts.
     const earth = placed.find((p) => p.id === "earth");
     const moon = placed.find((p) => p.id === "moon");
     if (!earth || !moon) return placed;
-    const geo = state.bodies.moon.geoAu;
-    const len = Math.hypot(geo.x, geo.y, geo.z) || 1;
+    const geo = state?.bodies?.moon?.geoAu;
+    const len = geo ? Math.hypot(geo.x, geo.y, geo.z) : 1;
     const offset = earth.radius * 3;
     const moonAdjusted: PlacedBody = {
       ...moon,
       position: {
-        x: earth.position.x + (geo.x / len) * offset,
-        y: earth.position.y + (geo.z / len) * offset,
-        z: earth.position.z - (geo.y / len) * offset,
+        x: earth.position.x + ((geo?.x ?? 0) / len) * offset,
+        y: earth.position.y + ((geo?.z ?? 0) / len) * offset,
+        z: earth.position.z - ((geo?.y ?? 0) / len) * offset,
       },
       radius: Math.max(earth.radius * 0.32, 0.05),
       orbitRadius: offset,
@@ -531,18 +596,19 @@ function SceneContents({ state }: { state: SolarSystemState }) {
   }, [placed, state, viewMode]);
 
   const earthPlaced = adjusted.find((p) => p.id === "earth");
+  const marsPlaced = adjusted.find((p) => p.id === "mars");
+  const jupiterPlaced = adjusted.find((p) => p.id === "jupiter");
+  const saturnPlaced = adjusted.find((p) => p.id === "saturn");
+  const uranusPlaced = adjusted.find((p) => p.id === "uranus");
+  const neptunePlaced = adjusted.find((p) => p.id === "neptune");
 
-  // A stable Vector3 ref that Earth's BodyMesh writes to every frame.
-  // LunarOrbitRing reads from it in its own useFrame — zero React overhead.
-  const earthLivePosRef = useRef(
-    new THREE.Vector3(
-      earthPlaced?.position.x ?? 0,
-      earthPlaced?.position.y ?? 0,
-      earthPlaced?.position.z ?? 0,
-    ),
-  );
+  const earthLivePosRef = useRef(new THREE.Vector3(earthPlaced?.position.x ?? 0, earthPlaced?.position.y ?? 0, earthPlaced?.position.z ?? 0));
+  const marsLivePosRef = useRef(new THREE.Vector3(marsPlaced?.position.x ?? 0, marsPlaced?.position.y ?? 0, marsPlaced?.position.z ?? 0));
+  const jupiterLivePosRef = useRef(new THREE.Vector3(jupiterPlaced?.position.x ?? 0, jupiterPlaced?.position.y ?? 0, jupiterPlaced?.position.z ?? 0));
+  const saturnLivePosRef = useRef(new THREE.Vector3(saturnPlaced?.position.x ?? 0, saturnPlaced?.position.y ?? 0, saturnPlaced?.position.z ?? 0));
+  const uranusLivePosRef = useRef(new THREE.Vector3(uranusPlaced?.position.x ?? 0, uranusPlaced?.position.y ?? 0, uranusPlaced?.position.z ?? 0));
+  const neptuneLivePosRef = useRef(new THREE.Vector3(neptunePlaced?.position.x ?? 0, neptunePlaced?.position.y ?? 0, neptunePlaced?.position.z ?? 0));
 
-  // Filter planetary orbit lines (excluding moon, handled separately)
   const planetOrbits = useMemo(() => {
     return adjusted.filter((p) => p.id !== "moon" && p.orbitPathPoints && p.orbitPathPoints.length > 0);
   }, [adjusted]);
@@ -567,7 +633,7 @@ function SceneContents({ state }: { state: SolarSystemState }) {
         />
       ))}
 
-      {/* Lunar Orbit Ring — reads Earth's live position via ref, never triggers re-renders */}
+      {/* Earth's Lunar Orbit Ring */}
       {earthPlaced && (
         <LunarOrbitRing
           viewMode={viewMode}
@@ -577,7 +643,68 @@ function SceneContents({ state }: { state: SolarSystemState }) {
         />
       )}
 
-      {/* Bodies */}
+      {/* Planetary Moon Systems with Proximity Fade-in */}
+      {marsPlaced && (
+        <PlanetMoonSystem
+          parentId="mars"
+          parentPlaced={marsPlaced}
+          viewMode={viewMode}
+          trueScaleUniverse={trueScaleUniverse}
+          parentPositionRef={marsLivePosRef}
+        />
+      )}
+      {jupiterPlaced && (
+        <PlanetMoonSystem
+          parentId="jupiter"
+          parentPlaced={jupiterPlaced}
+          viewMode={viewMode}
+          trueScaleUniverse={trueScaleUniverse}
+          parentPositionRef={jupiterLivePosRef}
+        />
+      )}
+      {saturnPlaced && (
+        <PlanetMoonSystem
+          parentId="saturn"
+          parentPlaced={saturnPlaced}
+          viewMode={viewMode}
+          trueScaleUniverse={trueScaleUniverse}
+          parentPositionRef={saturnLivePosRef}
+        />
+      )}
+      {uranusPlaced && (
+        <PlanetMoonSystem
+          parentId="uranus"
+          parentPlaced={uranusPlaced}
+          viewMode={viewMode}
+          trueScaleUniverse={trueScaleUniverse}
+          parentPositionRef={uranusLivePosRef}
+        />
+      )}
+      {neptunePlaced && (
+        <PlanetMoonSystem
+          parentId="neptune"
+          parentPlaced={neptunePlaced}
+          viewMode={viewMode}
+          trueScaleUniverse={trueScaleUniverse}
+          parentPositionRef={neptuneLivePosRef}
+        />
+      )}
+
+      {/* Main Asteroid Belt & Kuiper Belt */}
+      <AsteroidBelt viewMode={viewMode} />
+      <KuiperBelt viewMode={viewMode} />
+
+      {/* Minor Bodies, Dwarf Planets & Comet Halley */}
+      <MinorBodiesScene viewMode={viewMode} trueScaleUniverse={trueScaleUniverse} />
+
+      {/* Historic Spacecraft Probes & JWST at L2 */}
+      <SpacecraftScene
+        viewMode={viewMode}
+        earthPositionRef={earthLivePosRef}
+        earthRadius={earthPlaced?.radius ?? 0.42}
+      />
+
+      {/* Primary Planetary Bodies */}
       {adjusted.map((p) => (
         <BodyMesh
           key={p.id}
@@ -587,7 +714,21 @@ function SceneContents({ state }: { state: SolarSystemState }) {
           onSelect={selectBody}
           viewMode={viewMode}
           trueScaleUniverse={trueScaleUniverse}
-          livePositionRef={p.id === "earth" ? earthLivePosRef : undefined}
+          livePositionRef={
+            p.id === "earth"
+              ? earthLivePosRef
+              : p.id === "mars"
+                ? marsLivePosRef
+                : p.id === "jupiter"
+                  ? jupiterLivePosRef
+                  : p.id === "saturn"
+                    ? saturnLivePosRef
+                    : p.id === "uranus"
+                      ? uranusLivePosRef
+                      : p.id === "neptune"
+                        ? neptuneLivePosRef
+                        : undefined
+          }
         />
       ))}
 
@@ -596,6 +737,7 @@ function SceneContents({ state }: { state: SolarSystemState }) {
         selectedBody={selectedBody}
         viewMode={viewMode}
         trueScaleUniverse={trueScaleUniverse}
+        epochMs={epochMs}
       />
     </>
   );
@@ -615,16 +757,10 @@ export default function SolarSystemScene() {
         antialias: !performanceMode,
         powerPreference: "high-performance",
         logarithmicDepthBuffer: true,
-        // Preserve the drawing buffer so the scene stays visible between frames.
-        // Without this, some browsers/drivers clear the canvas between rAF calls,
-        // which is the direct cause of the black flash seen during dynamic simulation.
         preserveDrawingBuffer: false,
-        // Avoid context loss on battery-saver / throttled mobile GPUs
         failIfMajorPerformanceCaveat: false,
       }}
       camera={{ fov: 45, near: 0.0000001, far: 20000, position: [18, 14, 24] }}
-      // Always render every frame — R3F 'demand' mode can skip frames
-      // right after a state update lands, which produces the black-frame flash.
       frameloop="always"
     >
       <SceneContents state={state} />

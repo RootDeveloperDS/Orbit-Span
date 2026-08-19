@@ -21,6 +21,7 @@ import { useOfflineStatus } from "@/hooks/useOfflineStatus";
 import { useOrbitStore } from "@/store/useOrbitStore";
 
 import { BrandMark } from "./BrandMark";
+import { FeedbackWidget } from "./FeedbackWidget";
 
 const NAV = [
   { to: "/", label: "Explorer" },
@@ -170,7 +171,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <ExternalLink className="h-2.5 w-2.5 opacity-70" />
                 </a>
                 <span className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-secondary/40 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
-                  v1.1.0
+                  v1.3.0
                 </span>
               </div>
             </div>
@@ -324,6 +325,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
           </div>
 
+          {/* Feedback & Star Rating Telemetry Collector */}
+          <FeedbackWidget className="mt-8" />
+
           {/* Open Source Callout & Community Notice */}
           <div className="mt-8 rounded-lg border border-primary/20 bg-primary/5 p-4 text-xs leading-relaxed text-muted-foreground flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
@@ -384,6 +388,13 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
+
+      {/* Floating Feedback Dock for Desktop Fullscreen 3D Explorer */}
+      {isExplorer && (
+        <div className="hidden lg:block">
+          <FeedbackWidget variant="floating" />
+        </div>
+      )}
     </div>
   );
 }

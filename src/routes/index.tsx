@@ -5,6 +5,7 @@ import { BodySelector } from "@/components/orbit/BodySelector";
 import { ModeSwitch } from "@/components/orbit/ModeSwitch";
 import { TimeControls } from "@/components/orbit/TimeControls";
 import { SceneHost } from "@/components/orbit/scene/SceneHost";
+import { SceneLayerControls } from "@/components/orbit/scene/SceneLayerControls";
 import { useOrbitStore } from "@/store/useOrbitStore";
 import {
   ROUTE_SEO,
@@ -95,7 +96,7 @@ function ModeNotice() {
         </div>
         <p className="text-[10px] text-muted-foreground leading-relaxed">
           {trueScaleUniverse
-            ? "Exact 1:1 physical radii & orbital distances. Earth is 3.67× larger than Moon at 60 Earth radii. Labels auto-fade on close inspection."
+            ? "Exact 1:1 physical radii & orbital distances. Earth is 3.67× larger than Moon at 60 Earth radii. Moon orbits auto-fade on zoom."
             : "True orbital distances with visible planet minimum sizes. Toggle 100% Real for pure physical scale."}
         </p>
       </div>
@@ -123,8 +124,9 @@ function ExplorerPage() {
     <div className="relative flex flex-col lg:h-[calc(100vh-3.5rem)] lg:flex-row">
       <div className="relative h-[52vh] min-h-[320px] w-full border-b border-border/60 lg:h-full lg:flex-1 lg:border-b-0">
         <SceneHost />
-        <div className="absolute top-3 left-3 max-w-xs sm:max-w-sm z-20">
+        <div className="absolute top-3 left-3 max-w-xs sm:max-w-sm z-20 space-y-2">
           <ModeNotice />
+          <SceneLayerControls />
         </div>
         <p className="pointer-events-none absolute bottom-3 left-3 font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
           Drag to orbit · scroll to zoom · tap any body/label to focus
