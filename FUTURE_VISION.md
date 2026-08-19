@@ -71,6 +71,12 @@ The updated roadmap below details what has been **delivered** and organizes upco
 - **One-Click Time Warp**: Curated historical and upcoming astronomical event list (e.g. 2020 Great Conjunction, 2024 Total Solar Eclipse, 2029 Apophis Flyby).
 - **Interactive Event Playback**: Clicking an event smoothly warps the simulation clock and aligns the 3D camera to the optimal observation angle.
 
+#### 3.3 Historical Satellite & Spacecraft Launch Replay Engine
+- **Time-Synchronized Mission Launch Animation**: Interactive mission playback allowing users to select iconic spacecraft (Voyager 1, Voyager 2, New Horizons, Cassini, Parker Solar Probe) and watch their dynamic launch sequence from Earth, translunar/interplanetary injection, and outward flight across the Solar System.
+- **Planetary Gravity Assist & Slingshot Dynamics**: Step-by-step visual animation demonstrating how planetary gravity assists (e.g. Voyager 1 & 2 flybys of Jupiter, Saturn, Uranus, Neptune) boosted orbital velocity and redirected trajectories into interstellar space.
+- **Interactive Mission Time Scrubber & Milestone Timeline**: Set and scrub the simulation clock to any exact epoch along the probe's journey (e.g. Voyager 1 launch on Sept 5, 1977; Jupiter encounter on March 5, 1979; Saturn flyby on Nov 12, 1980; Heliopause crossing on Aug 25, 2012) to see where the spacecraft was relative to all planets at that exact date and time.
+- **Telemetry HUD & Camera Tracking Modes**: Real-time display of heliocentric distance (AU / km), velocity relative to the Sun ($v_{\text{rel}}$ in km/s), round-trip light time communication latency, and switchable camera modes ("Earth Departure View", "Planet Flyby Chase Cam", and "Heliocentric Overview").
+
 ---
 
 ### ⚛️ Phase 4: Interactive N-Body Gravity Sandbox & Slingshot Lab (P1)
@@ -118,7 +124,7 @@ The updated roadmap below details what has been **delivered** and organizes upco
 | :--- | :--- | :--- | :--- |
 | **Phase 1** | VSOP87 Engine, 100% Real Scale, Lunar Orbit, Procedural Shaders, Gravity Lab, PWA | Critical | ✅ **Completed (v1.2)** |
 | **Phase 2** | 5,000+ Asteroid Belt, Galilean Moons, Titan, Kuiper Belt, Spacecraft Trajectories | P0 | ✅ **Completed (v1.3)** |
-| **Phase 3** | Live Celestial Event Scanner, Conjunctions/Eclipses/Transits, One-Click Time Warp | P0 | ⏳ **Next Up** |
+| **Phase 3** | Live Celestial Event Scanner, Historical Spacecraft Launch Replay (Voyager 1/2), Time Warp | P0 | ⏳ **Next Up** |
 | **Phase 4** | RK4 N-Body Gravity Sandbox, Orbital Slingshots, Roche Limit & Tidal Inspector | P1 | ⏳ **Planned** |
 | **Phase 5** | Cinematic Fly-By Tour Mode, Web Audio Procedural Space Synthesizer | P1 | ⏳ **Planned** |
 | **Phase 6** | WebXR 360° VR Mode, WebXR Tabletop AR Solar System | P2 | ⏳ **Future** |

@@ -257,6 +257,7 @@ bun run preview
 - [ ] **Phase 3 (Live Celestial Event Engine & Time Warp)**:
   - Automated celestial event scanner (conjunctions, eclipses, transits, oppositions).
   - One-click "Jump to Event" interactive timeline bar with camera alignment.
+  - Historic spacecraft launch & journey replay engine (Voyager 1/2, New Horizons) with time-synchronized launch animation, gravity assist flybys, and epoch scrubbing.
 - [ ] **Phase 4 (Interactive N-Body Gravity Sandbox & Slingshot Lab)**:
   - Interactive RK4 numerical integrator for custom probe launches and orbital slingshot assists.
   - Roche limit boundary visualization and differential tidal stretch inspector.
