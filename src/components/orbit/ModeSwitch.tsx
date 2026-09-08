@@ -92,6 +92,22 @@ export function ModeSwitch() {
           </div>
         </div>
       )}
+
+      {/* Human Scale Controls within ModeSwitch */}
+      {viewMode === "human" && (
+        <div className="mt-2 rounded-md border border-primary/20 bg-primary/5 p-2.5 transition-all space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-semibold">
+              Everyday Scale Model
+            </span>
+            <span className="font-mono text-[9px] text-muted-foreground">Walking Radar Active</span>
+          </div>
+          <p className="text-[10px] text-muted-foreground leading-tight">
+            Distances mapped to human journeys. 3D metric radar rings and the slowed-down "Human Photon" are rendered live on the scene plane.
+          </p>
+        </div>
+      )}
+
     </div>
   );
 }

@@ -4,10 +4,10 @@
 
 An interactive astrophysics and orbital scale engine that calculates real planetary positions, true Newtonian gravitational pull on the human body, and translates cosmic distances into intuitive, human-scale physical benchmarks.
 
-🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.4.0)](CHANGELOG.md)**
+🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.5.0)](CHANGELOG.md)**
 
 [![Open Source Love](https://img.shields.io/badge/Open%20Source-100%25-brightgreen.svg)](https://github.com/RootDeveloperDS/Orbit-Span)
-[![Version: 1.4.0](https://img.shields.io/badge/Version-1.4.0-blue.svg)](CHANGELOG.md)
+[![Version: 1.5.0](https://img.shields.io/badge/Version-1.5.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)](https://react.dev/)
@@ -95,6 +95,21 @@ OrbitSpan introduces a mathematically rigorous **Human Scale Engine**. Users can
 
 *(Note: All distances are re-evaluated live from instantaneous planetary ephemeris vectors and vary as planets move through their orbits).*
 
+### 🏛️ Visual Comparison Pedestal
+To anchor proportional scale physically, the **Visual Scale Pedestal** stages inspected planets on a unified virtual stage with two distinct perspectives:
+* **Direct Planet vs. Earth (1:1 Ratio):** Renders celestial bodies side-by-side under a unified pixels-per-metre scale factor ($S = 160 / \max(D_E, D_P)$), ensuring benchmark Earth and inspected bodies render with 100% identical pixel geometry.
+* **With 1.8m Standing Human:** Visualizes the true physical footprint of celestial objects next to a human observer ($S = 170 / (\max(1.8, D_E, D_P) \times 1.15)$).
+* **Tangible Real-World Analogies:** Links celestial diameters directly to everyday tactile objects—from a pebble (Ceres) and golf ball (Moon) to a grapefruit (Earth), yoga ball (Jupiter), and two-story house (Sun).
+* **Zero Optical Stroke Distortion:** Discs use pure vector fill boundaries (`stroke="none"`) to eliminate artificial visual inflation on miniature bodies.
+
+### 🚶 "Walk the Solar System" City Expedition
+The **City Walk Journey Explorer** projects scaled astronomical distances onto walkable metropolitan routes across four global cities:
+* **New York City:** Sun at Battery Park $\to$ Mars at Washington Square $\to$ Jupiter at Central Park $\to$ Neptune at Columbia University.
+* **London:** Sun at Trafalgar Square $\to$ Earth at British Museum $\to$ Saturn at Tower Bridge $\to$ Neptune at Greenwich Observatory.
+* **Paris:** Sun at Eiffel Tower $\to$ Inner Planets along the Champ de Mars $\to$ Saturn at Arc de Triomphe $\to$ Neptune at La Défense.
+* **Tokyo:** Sun at Imperial Palace $\to$ Inner Planets at Tokyo Station $\to$ Jupiter at Roppongi $\to$ Neptune at Shinjuku.
+* **Biometric & Travel Telemetry:** Calculates real walking durations (at 5.0 km/h), cumulative stride counts (~0.762 m/step), active energy expenditure (~0.04 kcal/step), vehicular transit times (100 km/h), and true scaled photon light travel latency.
+
 ---
 
 ## ⚡ Gravity Lab: Real-Time Newtonian Forces
@@ -118,18 +133,18 @@ $$\text{Force: } F = m_{\text{observer}} \cdot a \quad [\text{N}]$$
 ## 🌟 Core Features
 
 - 🪐 **Real Ephemeris 3D Engine**: Live planetary orbits computed via the VSOP87 analytical series and Meeus/ELP lunar theory (via Astronomy Engine).
-- 🌌 **100% Real Universe Scale Mode**: Uncompromised 1:1 physical planetary radii and true astronomical distances with Earth-to-Moon diameter ratio of $3.667:1$ and lunar orbit distance of $60.33\times$ Earth radii.
+- 🌌 **Edge-to-Edge Spatial Canvas (`100dvh`)**: Immersive, full-screen cosmos viewport across desktop and mobile, with collapsible telemetry sidebars and touch-safe bottom sheet drawers (via Vaul).
+- 🎛️ **Unified Glass Top Controls Bar**: Floating HUD capsule integrating segmented scale modes, 1:1 real scale toggle, celestial layers popover (6 active toggles), and one-click Cinematic Zen Mode (`Z` / `Esc`).
+- ⏱️ **Docked Mission Clock**: Single-row playback speed selectors (`1h` to `1y`), live UTC clock, one-touch "Now" synchronization, and historic epoch milestone presets (*Voyager 1*, *JWST*, *Halley*).
+- 🏛️ **Visual Scale Pedestal Engine**: Side-by-side proportional comparison staging (1:1 planet vs. Earth and with a 1.8m human silhouette) with zero stroke distortion and everyday physical object analogies.
+- 🚶 **"Walk the Solar System" City Journey**: Scaled expedition routes across New York, London, Paris, and Tokyo with landmark milestones, walking duration, stride counts, and calorie burn metrics.
+- 🌕 **Major Planetary Moons System**: 18+ major moons across Mars, Jupiter (4:2:1 Laplace resonance), Saturn, Uranus, Neptune (retrograde Triton), and Pluto with proximity-adaptive orbit ring shaders.
+- ☄️ **5,000+ Instanced Asteroids & Kuiper Belt**: GPU-accelerated asteroid belt with Kirkwood gap distribution, 3,000+ Kuiper Belt planetesimals, and analytical Keplerian solver for Dwarf Planets & Comet 1P/Halley with solar-radiation tail physics.
+- 🛰️ **Historic Deep Space Probes & JWST at L2**: Trajectory ribbons for Voyager 1, Voyager 2, New Horizons, and James Webb Space Telescope at Sun-Earth L2.
+- 🔬 **100% Real Universe Scale Mode**: Uncompromised 1:1 physical planetary radii and true astronomical distances ($3.667\times$ Earth-to-Moon diameter ratio and $60.33\times$ Earth radii orbital distance).
 - 🌙 **Universal Lunar Orbit Ring**: Continuous 3D geocentric lunar orbit visualization dynamically tracked around Earth across all scale modes.
-- 🕒 **UTC Simulation Timeline**: Full scrubbable timeline with forward/reverse playback ($1\text{ h/s}$ to $1\text{ yr/s}$), step navigation, and a canonical UTC clock.
-- 🔭 **Four Rendering Perspectives**:
-  1. **100% Real Universe Scale**: Absolute 1:1 physical sizing and true astronomical orbital voids.
-  2. **Scientific Mode (Overview)**: True orbital distances with minimum visible body thresholds for broad system scanning.
-  3. **Exploration Mode**: Mathematically compressed distances with enlarged planetary meshes for interactive clarity.
-  4. **Human-Scale Mode**: Physical real-world distance translation benchmarks.
-- 🎥 **Zero-Lag Planet Tracking & Logarithmic Depth Camera**: Smooth orbital camera lock-on with dynamic near-clipping adjustments for zero-clipping surface inspection.
-- 🏷️ **Smart Distance-Adaptive 3D Labels**: Floating spatial name badges that auto-fade when zooming in close to keep planetary surfaces unobstructed.
 - ⚖️ **Interactive Gravity Lab**: Live gravitational force, acceleration, Earth percentage comparisons, and logarithmic force spectrum visualizations (via Recharts).
-- 🔬 **Science & Methodology Library**: Transparent mathematical documentation of constant derivations, inverse-square laws, acceleration vs. force, and coordinate systems.
+- 🏷️ **Smart Distance-Adaptive 3D Labels**: Floating spatial name badges that auto-fade when zooming in close to keep planetary surfaces unobstructed.
 - 📴 **Offline-First PWA (v2)**: Service worker shell architecture that caches simulation algorithms, ephemerides, and assets for 100% offline functionality.
 - ♿ **Adaptive Performance Mode**: Hardware-aware reduced effects toggle for smooth 60fps rendering across low-power mobile GPUs.
 

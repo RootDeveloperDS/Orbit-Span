@@ -42,4 +42,32 @@ describe("human scale engine", () => {
     expect(formatModelLength(3.2)).toContain("m");
     expect(formatModelLength(48000)).toContain("km");
   });
+
+  it("calculates realistic journey times and everyday object matches", async () => {
+    const { getClosestEverydayObject, computeJourneyTimes, formatHumanDuration } = await import("../humanScaleData");
+    const { scaledSpeedOfLightMps } = await import("../scale");
+
+    // Earth at 10cm matches Grapefruit/fist
+    const earthObj = getClosestEverydayObject(0.1);
+    expect(earthObj.name).toContain("Grapefruit");
+
+    // Sun at ~10.9m matches house
+    const sunObj = getClosestEverydayObject(10.9);
+    expect(sunObj.name).toContain("house");
+
+    // Scaled speed of light at 10cm Earth is ~2.35 m/s (~8.4 km/h)
+    const cScaled = scaledSpeedOfLightMps(0.1);
+    expect(cScaled).toBeGreaterThan(2.0);
+    expect(cScaled).toBeLessThan(2.5);
+
+    // Journey times for Sun to Earth (1170 m model distance)
+    const journey = computeJourneyTimes(1170, 149597870700, 0.1);
+    expect(journey.walkingSec).toBeGreaterThan(700);
+    expect(journey.walkingSec).toBeLessThan(1000);
+    expect(Math.round(journey.lightTimeSec)).toBe(499);
+
+    expect(formatHumanDuration(500)).toBe("8m 20s");
+    expect(formatHumanDuration(7200)).toBe("2 hrs");
+  });
 });
+

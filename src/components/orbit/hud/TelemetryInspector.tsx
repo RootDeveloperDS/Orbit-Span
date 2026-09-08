@@ -1,5 +1,4 @@
-import { X } from "lucide-react";
-
+import { X, Footprints, Car, Sparkles, Clock, Ruler } from "lucide-react";
 import { BODIES, type BodyId } from "@/lib/orbit/constants";
 import { MOONS, type MoonId } from "@/lib/orbit/moons";
 import { MINOR_BODIES, type MinorBodyId } from "@/lib/orbit/minorBodies";
@@ -7,7 +6,14 @@ import { SPACECRAFT, type SpacecraftId } from "@/lib/orbit/spacecraft";
 import { computeGravity, formatDistance, formatNumber } from "@/lib/orbit/physics";
 import { useOrbitStore } from "@/store/useOrbitStore";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
+import { scaleFactor, formatModelLength, REFERENCE_OPTIONS } from "@/lib/orbit/scale";
+import {
+  getClosestEverydayObject,
+  computeJourneyTimes,
+  formatHumanDuration,
+} from "@/lib/orbit/humanScaleData";
 import { SciValue } from "../SciValue";
+
 
 interface TelemetryInspectorProps {
   onClose?: () => void;
@@ -25,7 +31,16 @@ function MetricItem({ label, children }: { label: string; children: React.ReactN
 export function TelemetryInspector({ onClose }: TelemetryInspectorProps) {
   const selectedBody = useOrbitStore((s) => s.selectedBody);
   const observerMassKg = useOrbitStore((s) => s.observerMassKg);
+  const viewMode = useOrbitStore((s) => s.viewMode);
+  const earthReference = useOrbitStore((s) => s.earthReference);
+  const customEarthM = useOrbitStore((s) => s.customEarthDiameterM);
+  const setIsPedestalModalOpen = useOrbitStore((s) => s.setIsPedestalModalOpen);
+  const setIsCityWalkModalOpen = useOrbitStore((s) => s.setIsCityWalkModalOpen);
   const state = useSolarSystemState();
+
+  const refM = earthReference === "custom" ? Math.max(customEarthM, 0.001) : (REFERENCE_OPTIONS.find((o) => o.id === earthReference)?.metres ?? 0.1);
+  const k = scaleFactor(refM);
+
 
   // Standard Planets & Sun
   if (selectedBody in BODIES) {
@@ -90,9 +105,86 @@ export function TelemetryInspector({ onClose }: TelemetryInspectorProps) {
             <SciValue value={gravity.earthGravityRatio} />
           </MetricItem>
         </div>
+
+        {/* Human Scale Intuition Companion Card */}
+        {(() => {
+          const modelDiameterM = meta.diameterM * k;
+          const modelDistanceM = distanceM * k;
+          const obj = getClosestEverydayObject(modelDiameterM);
+          const journey = computeJourneyTimes(modelDistanceM, distanceM, refM);
+
+          return (
+            <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-semibold flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Human Scale Intuition
+                </span>
+                <span className="font-mono text-[9px] text-muted-foreground">Earth = {formatModelLength(refM)}</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 rounded-md bg-secondary/30 p-2">
+                <span className="text-2xl" role="img" aria-label={obj.name}>{obj.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-semibold text-foreground flex items-center justify-between">
+                    <span>{obj.name}</span>
+                    <span className="font-mono text-[10px] text-primary">{formatModelLength(modelDiameterM)}</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground truncate">{obj.description}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5 pt-1">
+                <div className="rounded bg-secondary/20 p-1.5">
+                  <span className="font-mono text-[9px] text-muted-foreground flex items-center gap-1">
+                    <Footprints className="h-2.5 w-2.5 text-emerald-400" /> Walk to body
+                  </span>
+                  <span className="font-mono text-[11px] font-medium text-foreground block mt-0.5">
+                    {formatHumanDuration(journey.walkingSec)}
+                  </span>
+                </div>
+                <div className="rounded bg-secondary/20 p-1.5">
+                  <span className="font-mono text-[9px] text-muted-foreground flex items-center gap-1">
+                    <Car className="h-2.5 w-2.5 text-cyan-400" /> 100 km/h car
+                  </span>
+                  <span className="font-mono text-[11px] font-medium text-foreground block mt-0.5">
+                    {formatHumanDuration(journey.carSec)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-[10px] font-mono border-t border-border/40 pt-1 text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Clock className="h-2.5 w-2.5 text-yellow-400" /> Light transit:
+                </span>
+                <span className="text-foreground">{formatHumanDuration(journey.lightTimeSec)}</span>
+              </div>
+
+              {/* Quick Action Pedestal & City Walk Modals */}
+              <div className="flex items-center gap-1.5 pt-1.5 border-t border-border/40">
+                <button
+                  type="button"
+                  onClick={() => setIsPedestalModalOpen(true)}
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-1 rounded bg-primary/20 py-1 text-[10px] font-medium text-primary hover:bg-primary/30 transition-colors"
+                  title="Compare this body on the Visual Pedestal"
+                >
+                  <Ruler className="h-2.5 w-2.5" /> Pedestal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsCityWalkModalOpen(true)}
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-1 rounded bg-emerald-950/40 border border-emerald-500/30 py-1 text-[10px] font-medium text-emerald-400 hover:bg-emerald-900/40 transition-colors"
+                  title="Walk to this body in a real city"
+                >
+                  <Footprints className="h-2.5 w-2.5" /> City Walk
+                </button>
+              </div>
+            </div>
+          );
+        })()}
       </div>
     );
   }
+
 
   // Moons
   if (selectedBody in MOONS) {

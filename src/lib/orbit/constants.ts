@@ -15,6 +15,10 @@ export const KM_IN_M = 1000;
 /** Mean Earth diameter used as the human-scale reference, in metres. */
 export const EARTH_MEAN_DIAMETER_M = 12_742_000;
 
+/** Speed of light in vacuum in metres per second. */
+export const SPEED_OF_LIGHT_M_S = 299_792_458;
+
+
 export type BodyId =
   | "sun"
   | "mercury"

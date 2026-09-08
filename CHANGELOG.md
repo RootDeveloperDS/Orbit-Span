@@ -4,6 +4,31 @@ All notable changes to the **OrbitSpan** project will be documented in this file
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.5.0] - 2026-09-08
+
+### 🚀 Added
+- **Visual Scale Pedestal Modal (`VisualPedestalModal.tsx`)**: Engineered a mathematically rigorous physical comparison staging suite featuring dual-perspective visualization:
+  - **Direct Planet vs. Earth (1:1 Ratio)**: Renders side-by-side comparison under a strict unified pixels-per-metre scale factor ($S = 160 / \max(D_E, D_P)$).
+  - **With 1.8m Human**: Positions standing human silhouette alongside inspected planet and benchmark Earth ($S = 170 / (\max(1.8, D_E, D_P) \times 1.15)$), ensuring benchmark Earth and inspected Earth render with 100% identical pixel geometry.
+  - **Everyday Object Analogies**: Maps celestial radii to tactile real-world artifacts (Grapefruit, Apple, Golf Ball, Pebble, Yoga Ball, Two-Story House) with physical feedback descriptions.
+  - **Optical Distortion Sanitization**: Purged all stroke boundaries, outer rings, and dashed lines (`stroke="none"`) from celestial SVGs to eliminate optical radius inflation on miniature planetary bodies like the Moon and Mercury.
+- **City Walk Journey Explorer (`CityJourneyModal.tsx`)**: Engineered an interactive "Walk the Solar System" expedition modal translating astronomical distances into real-world city walking routes:
+  - **4 Global Metropolitan Centers**: New York City (Battery Park to Central Park/Columbia), London (Trafalgar Square to Greenwich/Hampstead), Paris (Eiffel Tower to Arc de Triomphe/La Défense), and Tokyo (Imperial Palace to Shinjuku/Roppongi).
+  - **Live Biometric Telemetry**: Computes walking duration at 5.0 km/h, cumulative stride count (~0.762 m/step), active calorie expenditure (~0.04 kcal/step), vehicular transit at 100 km/h, and true scaled photon latency in `humanScaleData.ts`.
+  - **Interactive Auto-Walk Simulation**: Interval-driven route progression with real-time waypoint milestones and street-level perspective logs.
+- **3D Human Scale Grid (`HumanScaleGrid.tsx`)**: Rendered a high-contrast metric ground plane grid in `SolarSystemScene.tsx` when operating in Human Scale mode, providing spatial depth reference.
+
+### ⚡ Changed & Unified
+- **`useOrbitStore.ts`**: Added `isPedestalModalOpen` and `isCityWalkModalOpen` state flags with corresponding setters, plus `setSelectedBody` alias method for parity with `selectBody`.
+- **`TopControlsBar.tsx`**: Integrated direct **[Pedestal]** and **[City Walk]** action triggers when viewing in Human Scale mode; mounted modal dialog portals at the HUD level.
+- **`TelemetryInspector.tsx` & `BodyReadout.tsx`**: Integrated companion quick-action dispatch buttons for instant modal launching from any inspection card.
+- **`HumanScalePanel.tsx`**: Added journey benchmark triggers and converted planetary badges into interactive modal inspection launchers.
+
+### 🐛 Fixed
+- **SSR Hydration Crash in `TopControlsBar.tsx`**: Resolved `ReferenceError: showMoons is not defined` during SSR by restoring the decoupled store selector.
+- **`VisualPedestalModal.tsx` Dispatch Error**: Fixed selection dispatch failure where `setSelectedBody` was previously undefined on mount.
+- **Scale Discrepancy on Benchmark Earth**: Resolved rendering bug where benchmark Earth and inspected Earth were computed using independent bounding boxes, resulting in unequal pixel radii for the same celestial body.
+
 ## [v1.4.0] - 2026-09-08
 
 ### 🚀 Added & Overhauled

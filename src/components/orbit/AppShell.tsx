@@ -172,7 +172,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   <ExternalLink className="h-2.5 w-2.5 opacity-70" />
                 </a>
                 <span className="inline-flex items-center gap-1.5 rounded-md border border-border/60 bg-secondary/40 px-2.5 py-1 font-mono text-[10px] text-muted-foreground">
-                  v1.4.0
+                  v1.5.0
                 </span>
               </div>
             </div>

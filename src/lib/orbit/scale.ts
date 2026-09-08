@@ -79,3 +79,9 @@ export function buildScaledModel(
 export function walkingMinutes(modelMetres: number): number {
   return modelMetres / 1.4 / 60;
 }
+
+/** Scaled speed of light in model metres per second (e.g. 2.35 m/s or 8.4 km/h for 10cm Earth). */
+export function scaledSpeedOfLightMps(referenceEarthDiameterM: number): number {
+  return 299792458 * scaleFactor(referenceEarthDiameterM);
+}
+

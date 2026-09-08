@@ -9,7 +9,10 @@ import {
   Orbit,
   Send,
   Tag,
+  Ruler,
+  Footprints,
 } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 
 import {
   Popover,
@@ -18,6 +21,10 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { useOrbitStore, type ViewMode } from "@/store/useOrbitStore";
+import { REFERENCE_OPTIONS, type EarthReferencePreset } from "@/lib/orbit/scale";
+import { VisualPedestalModal } from "../human/VisualPedestalModal";
+import { CityJourneyModal } from "../human/CityJourneyModal";
+
 
 interface TopControlsBarProps {
   isSidebarOpen: boolean;
@@ -57,7 +64,14 @@ export function TopControlsBar({
   const setViewMode = useOrbitStore((s) => s.setViewMode);
   const trueScaleUniverse = useOrbitStore((s) => s.trueScaleUniverse);
   const setTrueScaleUniverse = useOrbitStore((s) => s.setTrueScaleUniverse);
-
+  const earthReference = useOrbitStore((s) => s.earthReference);
+  const setEarthReference = useOrbitStore((s) => s.setEarthReference);
+  const photonSpeedMode = useOrbitStore((s) => s.photonSpeedMode);
+  const setPhotonSpeedMode = useOrbitStore((s) => s.setPhotonSpeedMode);
+  const isPedestalModalOpen = useOrbitStore((s) => s.isPedestalModalOpen);
+  const setIsPedestalModalOpen = useOrbitStore((s) => s.setIsPedestalModalOpen);
+  const isCityWalkModalOpen = useOrbitStore((s) => s.isCityWalkModalOpen);
+  const setIsCityWalkModalOpen = useOrbitStore((s) => s.setIsCityWalkModalOpen);
   const showMoons = useOrbitStore((s) => s.showMoons);
   const setShowMoons = useOrbitStore((s) => s.setShowMoons);
   const showMoonOrbits = useOrbitStore((s) => s.showMoonOrbits);
@@ -81,7 +95,8 @@ export function TopControlsBar({
   ].filter(Boolean).length;
 
   return (
-    <header className="pointer-events-auto flex flex-wrap items-center gap-2 rounded-full border border-border/60 bg-space-deep/80 px-2 py-1.5 shadow-xl backdrop-blur-xl transition-all">
+    <>
+      <header className="pointer-events-auto flex flex-wrap items-center gap-2 rounded-full border border-border/60 bg-space-deep/80 px-2 py-1.5 shadow-xl backdrop-blur-xl transition-all">
       {/* View Mode Segmented Pill */}
       <nav aria-label="Simulation scale mode" className="flex items-center rounded-full bg-secondary/40 p-0.5">
         {MODES.map((mode) => {
@@ -131,7 +146,87 @@ export function TopControlsBar({
         </button>
       )}
 
-      {/* Layers Popover Menu */}
+      {/* Human Scale Quick Presets (Only visible in Human Scale mode) */}
+      {viewMode === "human" && (
+        <div className="flex items-center gap-1">
+          {/* Quick presets: 1cm (Marble), 10cm (Fist), 25cm (Soccer) */}
+          <div className="hidden items-center rounded-full bg-secondary/30 p-0.5 md:flex">
+            {(["1cm", "10cm", "25cm"] as const).map((preset) => (
+              <button
+                key={preset}
+                type="button"
+                onClick={() => setEarthReference(preset)}
+                className={`cursor-pointer rounded-full px-2 py-0.5 text-[10px] font-mono transition-all ${
+                  earthReference === preset
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title={`Earth = ${REFERENCE_OPTIONS.find((o) => o.id === preset)?.note}`}
+              >
+                {preset}
+              </button>
+            ))}
+          </div>
+
+          {/* Visual Scale Pedestal Modal trigger */}
+          <button
+            type="button"
+            onClick={() => setIsPedestalModalOpen(true)}
+            className="flex cursor-pointer items-center gap-1 rounded-full border border-primary/50 bg-primary/20 px-2.5 py-1 text-[11px] font-medium text-primary shadow-xs transition-all hover:bg-primary/30 hover:border-primary"
+            title="Open Visual Scale Pedestal tangible comparison"
+          >
+            <Ruler className="h-3 w-3" />
+            <span className="hidden sm:inline">Pedestal</span>
+          </button>
+
+          {/* City Walk Modal trigger */}
+          <button
+            type="button"
+            onClick={() => setIsCityWalkModalOpen(true)}
+            className="flex cursor-pointer items-center gap-1 rounded-full border border-emerald-500/50 bg-emerald-950/40 px-2.5 py-1 text-[11px] font-medium text-emerald-400 shadow-xs transition-all hover:bg-emerald-900/50 hover:border-emerald-400"
+            title="Walk the Solar System across real city landmarks"
+          >
+            <Footprints className="h-3 w-3" />
+            <span className="hidden sm:inline">City Walk</span>
+          </button>
+
+          {/* Photon Speed Toggle: Real-time 8.3m vs 12s Demo */}
+          <button
+            type="button"
+            onClick={() => setPhotonSpeedMode(photonSpeedMode === "realtime" ? "preview" : "realtime")}
+            className={`flex cursor-pointer items-center gap-1 rounded-full border px-2.5 py-1 text-[11px] font-medium transition-all ${
+              photonSpeedMode === "realtime"
+                ? "border-yellow-500/50 bg-yellow-500/15 text-yellow-300 shadow-xs hover:bg-yellow-500/25"
+                : "border-border/60 bg-secondary/30 text-muted-foreground hover:text-foreground"
+            }`}
+            title={
+              photonSpeedMode === "realtime"
+                ? "Photon moves at exact real-time speed (takes 8.3 minutes to reach Earth). Click for 12s demo."
+                : "Photon is in 12s fast demo loop. Click to switch to exact 8.3-minute real-time transit."
+            }
+          >
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${
+                photonSpeedMode === "realtime" ? "bg-yellow-400 animate-pulse" : "bg-muted-foreground/60"
+              }`}
+            />
+            <span className="font-mono text-[10px]">
+              {photonSpeedMode === "realtime" ? "⚡ 8.3 min" : "⚡ 12s Demo"}
+            </span>
+          </button>
+
+          {/* Direct Workbench Link */}
+          <Link
+            to="/human-scale"
+            className="flex cursor-pointer items-center gap-1 rounded-full border border-border/60 bg-secondary/30 px-2.5 py-1 text-[11px] font-medium text-foreground shadow-xs transition-all hover:bg-secondary/60 hover:border-border"
+            title="Open Interactive Human Scale Workbench"
+          >
+            <span className="hidden sm:inline">Workbench</span>
+          </Link>
+        </div>
+      )}
+
+
       <Popover>
         <PopoverTrigger asChild>
           <button
@@ -232,5 +327,20 @@ export function TopControlsBar({
         )}
       </button>
     </header>
+
+    {/* Visual Scale Pedestal Modal */}
+    <VisualPedestalModal
+      open={isPedestalModalOpen}
+      onOpenChange={setIsPedestalModalOpen}
+      onOpenCityWalk={() => setIsCityWalkModalOpen(true)}
+    />
+
+    {/* Walk the Solar System / City Journey Modal */}
+    <CityJourneyModal
+      open={isCityWalkModalOpen}
+      onOpenChange={setIsCityWalkModalOpen}
+      onOpenPedestal={() => setIsPedestalModalOpen(true)}
+    />
+  </>
   );
 }

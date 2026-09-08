@@ -1,3 +1,4 @@
+import { Footprints, Car, Sparkles, Ruler } from "lucide-react";
 import { BODIES, type BodyId } from "@/lib/orbit/constants";
 import { MOONS, type MoonId } from "@/lib/orbit/moons";
 import { MINOR_BODIES, type MinorBodyId } from "@/lib/orbit/minorBodies";
@@ -5,8 +6,11 @@ import { SPACECRAFT, type SpacecraftId } from "@/lib/orbit/spacecraft";
 import { EARTH_SURFACE_G, computeGravity, formatDistance, formatNumber } from "@/lib/orbit/physics";
 import { useOrbitStore } from "@/store/useOrbitStore";
 import { useSolarSystemState } from "@/hooks/useSolarSystemState";
+import { scaleFactor, formatModelLength, REFERENCE_OPTIONS } from "@/lib/orbit/scale";
+import { getClosestEverydayObject, computeJourneyTimes, formatHumanDuration } from "@/lib/orbit/humanScaleData";
 
 import { SciValue } from "./SciValue";
+
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -65,6 +69,78 @@ export function BodyReadout() {
         <Row label="Vs Earth surface gravity">
           <SciValue value={gravity.earthGravityRatio} />
         </Row>
+
+        {/* Human Scale Intuition Card */}
+        {(() => {
+          const earthReference = useOrbitStore.getState().earthReference;
+          const customEarthM = useOrbitStore.getState().customEarthDiameterM;
+          const refM = earthReference === "custom" ? Math.max(customEarthM, 0.001) : (REFERENCE_OPTIONS.find((o) => o.id === earthReference)?.metres ?? 0.1);
+          const k = scaleFactor(refM);
+          const modelDiameterM = meta.diameterM * k;
+          const modelDistanceM = distanceM * k;
+          const obj = getClosestEverydayObject(modelDiameterM);
+          const journey = computeJourneyTimes(modelDistanceM, distanceM, refM);
+
+          return (
+            <div className="mt-3 rounded-lg border border-primary/30 bg-primary/5 p-2.5 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-primary font-semibold flex items-center gap-1">
+                  <Sparkles className="h-3 w-3" /> Human Scale Intuition
+                </span>
+                <span className="font-mono text-[9px] text-muted-foreground">Earth = {formatModelLength(refM)}</span>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-md bg-secondary/30 p-2">
+                <span className="text-xl" role="img" aria-label={obj.name}>{obj.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-xs font-semibold text-foreground flex items-center justify-between">
+                    <span>{obj.name}</span>
+                    <span className="font-mono text-[10px] text-primary">{formatModelLength(modelDiameterM)}</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground truncate">{obj.description}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5 pt-0.5">
+                <div className="rounded bg-secondary/20 p-1.5">
+                  <span className="font-mono text-[9px] text-muted-foreground flex items-center gap-1">
+                    <Footprints className="h-2.5 w-2.5 text-emerald-400" /> Walk to body
+                  </span>
+                  <span className="font-mono text-[10px] font-medium text-foreground block mt-0.5">
+                    {formatHumanDuration(journey.walkingSec)}
+                  </span>
+                </div>
+                <div className="rounded bg-secondary/20 p-1.5">
+                  <span className="font-mono text-[9px] text-muted-foreground flex items-center gap-1">
+                    <Car className="h-2.5 w-2.5 text-cyan-400" /> 100 km/h car
+                  </span>
+                  <span className="font-mono text-[10px] font-medium text-foreground block mt-0.5">
+                    {formatHumanDuration(journey.carSec)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex items-center gap-1.5 pt-1 border-t border-border/40">
+                <button
+                  type="button"
+                  onClick={() => useOrbitStore.getState().setIsPedestalModalOpen(true)}
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-1 rounded bg-primary/20 py-1 text-[10px] font-medium text-primary hover:bg-primary/30 transition-colors"
+                >
+                  <Ruler className="h-2.5 w-2.5" /> Pedestal
+                </button>
+                <button
+                  type="button"
+                  onClick={() => useOrbitStore.getState().setIsCityWalkModalOpen(true)}
+                  className="flex-1 cursor-pointer flex items-center justify-center gap-1 rounded bg-emerald-950/40 border border-emerald-500/30 py-1 text-[10px] font-medium text-emerald-400 hover:bg-emerald-900/40 transition-colors"
+                >
+                  <Footprints className="h-2.5 w-2.5" /> City Walk
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+
         <p className="pt-2 text-[11px] leading-relaxed text-muted-foreground">
           Earth's surface gravity is {EARTH_SURFACE_G} m/s². Acceleration does not depend on your mass;
           the force you feel does.
@@ -72,6 +148,7 @@ export function BodyReadout() {
       </div>
     );
   }
+
 
   // Check if selected body is a Moon
   if (selectedBody in MOONS) {

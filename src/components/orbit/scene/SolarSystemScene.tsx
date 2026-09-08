@@ -31,6 +31,10 @@ import { AsteroidBelt } from "./AsteroidBelt";
 import { KuiperBelt } from "./KuiperBelt";
 import { MinorBodiesScene } from "./MinorBodiesScene";
 import { SpacecraftScene } from "./SpacecraftScene";
+import { HumanScaleGrid } from "./HumanScaleGrid";
+import { getClosestEverydayObject } from "@/lib/orbit/humanScaleData";
+import { scaleFactor, REFERENCE_OPTIONS } from "@/lib/orbit/scale";
+
 
 /** Stable 3D trajectory line that does not thrash WebGL buffers on every tick. */
 const StableOrbitLine = React.memo(function StableOrbitLine({
@@ -129,6 +133,18 @@ const BodyMesh = React.memo(function BodyMesh({
   const [hovered, setHovered] = useState(false);
   const [isCloseUp, setIsCloseUp] = useState(false);
   useCursor(hovered);
+
+  const earthReference = useOrbitStore((s) => s.earthReference);
+  const customEarthM = useOrbitStore((s) => s.customEarthDiameterM);
+
+  const everydayObject = useMemo(() => {
+    if (viewMode !== "human") return null;
+    const refM = earthReference === "custom" ? Math.max(customEarthM, 0.001) : (REFERENCE_OPTIONS.find((o) => o.id === earthReference)?.metres ?? 0.1);
+    const k = scaleFactor(refM);
+    const modelDiameterM = meta.diameterM * k;
+    return getClosestEverydayObject(modelDiameterM);
+  }, [viewMode, earthReference, customEarthM, meta.diameterM]);
+
 
   const handlePointerOver = useCallback((e: { stopPropagation: () => void }) => {
     e.stopPropagation();
@@ -301,19 +317,26 @@ const BodyMesh = React.memo(function BodyMesh({
               e.stopPropagation();
               onSelect(placed.id);
             }}
-            className={`cursor-pointer select-none whitespace-nowrap rounded px-1.5 py-0.5 font-mono text-[9px] sm:text-[10px] tracking-[0.12em] uppercase transition-all duration-150 shadow-sm ${
+            className={`cursor-pointer select-none whitespace-nowrap rounded px-2 py-0.5 font-mono text-[9px] sm:text-[10px] tracking-wider uppercase transition-all duration-150 shadow-md flex items-center gap-1.5 ${
               selected
-                ? "border border-primary/70 bg-primary/40 text-foreground shadow-primary/30"
+                ? "border border-primary/80 bg-primary/40 text-foreground shadow-primary/30"
                 : hovered
-                  ? "border border-foreground/40 bg-background/90 text-foreground"
-                  : "border border-border/40 bg-background/50 text-muted-foreground backdrop-blur-[2px] hover:text-foreground"
+                  ? "border border-foreground/40 bg-space-deep/95 text-foreground"
+                  : "border border-border/40 bg-space-deep/80 text-muted-foreground backdrop-blur-xs hover:text-foreground"
             }`}
             title={`Select and zoom to ${meta.name}`}
           >
-            {meta.name}
+            <span className="font-semibold">{meta.name}</span>
+            {everydayObject && (
+              <span className="rounded bg-primary/15 px-1 py-0.2 text-[8px] font-normal lowercase tracking-normal text-cyan-300">
+                {everydayObject.icon} {everydayObject.name}
+              </span>
+            )}
           </button>
         </div>
       </Html>
+
+
     </group>
   );
 });
@@ -703,6 +726,12 @@ function SceneContents({ state }: { state: SolarSystemState }) {
         earthPositionRef={earthLivePosRef}
         earthRadius={earthPlaced?.radius ?? 0.42}
       />
+
+      {/* Real-World Architectural Radar Grid & Photon Runner in Human Scale Mode */}
+      {viewMode === "human" && (
+        <HumanScaleGrid earthPositionRef={earthLivePosRef} />
+      )}
+
 
       {/* Primary Planetary Bodies */}
       {adjusted.map((p) => (

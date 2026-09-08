@@ -30,6 +30,15 @@ export interface OrbitState {
   customEarthDiameterM: number;
   /** Reduced-effects / low-power rendering. */
   performanceMode: boolean;
+  /** In Human Scale: 'realtime' (true 500s / 8.3min transit) vs 'preview' (~15s loop for demonstration). */
+  photonSpeedMode: "realtime" | "preview";
+  /** Visual scale pedestal comparison modal state. */
+  isPedestalModalOpen: boolean;
+  setIsPedestalModalOpen: (open: boolean) => void;
+  /** City walk / Walk the Solar System modal state. */
+  isCityWalkModalOpen: boolean;
+  setIsCityWalkModalOpen: (open: boolean) => void;
+
   setEpochMs: (ms: number) => void;
   advance: (deltaSimSeconds: number) => void;
   now: () => void;
@@ -43,10 +52,12 @@ export interface OrbitState {
   setShowMoonOrbits: (show: boolean) => void;
   setShowSpacecraft: (show: boolean) => void;
   selectBody: (id: BodyId | AnySelectableId) => void;
+  setSelectedBody: (id: BodyId | AnySelectableId) => void;
   setObserverMassKg: (kg: number) => void;
   setEarthReference: (ref: EarthReferencePreset) => void;
   setCustomEarthDiameterM: (m: number) => void;
   setPerformanceMode: (on: boolean) => void;
+  setPhotonSpeedMode: (mode: "realtime" | "preview") => void;
 }
 
 export const PLAYBACK_RATES: readonly { label: string; value: number }[] = [
@@ -74,6 +85,11 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   earthReference: "10cm",
   customEarthDiameterM: 0.15,
   performanceMode: false,
+  photonSpeedMode: "realtime",
+  isPedestalModalOpen: false,
+  setIsPedestalModalOpen: (open) => set({ isPedestalModalOpen: open }),
+  isCityWalkModalOpen: false,
+  setIsCityWalkModalOpen: (open) => set({ isCityWalkModalOpen: open }),
   setEpochMs: (ms) => set({ epochMs: ms }),
   advance: (deltaSimSeconds) => set((s) => ({ epochMs: s.epochMs + deltaSimSeconds * 1000 })),
   now: () => set({ epochMs: Date.now() }),
@@ -87,8 +103,11 @@ export const useOrbitStore = create<OrbitState>((set) => ({
   setShowMoonOrbits: (show) => set({ showMoonOrbits: show }),
   setShowSpacecraft: (show) => set({ showSpacecraft: show }),
   selectBody: (id) => set({ selectedBody: id }),
+  setSelectedBody: (id) => set({ selectedBody: id }),
   setObserverMassKg: (kg) => set({ observerMassKg: Number.isFinite(kg) ? kg : 70 }),
   setEarthReference: (ref) => set({ earthReference: ref }),
   setCustomEarthDiameterM: (m) => set({ customEarthDiameterM: m }),
   setPerformanceMode: (on) => set({ performanceMode: on }),
+  setPhotonSpeedMode: (mode) => set({ photonSpeedMode: mode }),
 }));
+
