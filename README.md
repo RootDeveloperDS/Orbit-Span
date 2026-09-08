@@ -4,15 +4,19 @@
 
 An interactive astrophysics and orbital scale engine that calculates real planetary positions, true Newtonian gravitational pull on the human body, and translates cosmic distances into intuitive, human-scale physical benchmarks.
 
-🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.3.0)](CHANGELOG.md)**
+🔗 **[Live Deployment: orbitspan.vercel.app](https://orbitspan.vercel.app/)** · 📜 **[Changelog (v1.4.0)](CHANGELOG.md)**
 
 [![Open Source Love](https://img.shields.io/badge/Open%20Source-100%25-brightgreen.svg)](https://github.com/RootDeveloperDS/Orbit-Span)
-[![Version: 1.3.0](https://img.shields.io/badge/Version-1.3.0-blue.svg)](CHANGELOG.md)
+[![Version: 1.4.0](https://img.shields.io/badge/Version-1.4.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)](https://react.dev/)
 [![Three.js](https://img.shields.io/badge/Three.js-R185-black?logo=three.js)](https://threejs.org/)
 [![PWA Ready](https://img.shields.io/badge/PWA-Offline%20Cached-orange.svg)](https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps)
+
+<p align="center">
+  <img src="public/appview.png" alt="OrbitSpan 3D Solar System Explorer Preview" width="100%" />
+</p>
 
 ---
 

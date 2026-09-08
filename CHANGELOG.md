@@ -4,6 +4,18 @@ All notable changes to the **OrbitSpan** project will be documented in this file
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.4.0] - 2026-09-08
+
+### 🚀 Added & Overhauled
+- **Edge-to-Edge 3D Cosmos Canvas**: Replaced rigid 380px fixed desktop sidebar and cramped 52vh mobile view with an edge-to-edge full-viewport cosmos canvas (`100dvh`) in `src/routes/index.tsx`.
+- **Unified Glass Top Controls Bar (`TopControlsBar.tsx`)**: Consolidated scattered mode notices and layer buttons into a single floating capsule with segmented scale mode pill, 1:1 real universe toggle switch, and celestial layers popover menu.
+- **Floating Mission Clock & Epoch Controller (`MissionClockBar.tsx`)**: Engineered single-row compact playback speed selectors (`1h`, `1d`, `1w`, `1m`, `1y`), live UTC clock display, one-touch "Now" synchronization, and milestone date jumper popover.
+- **Collapsible Telemetry HUD & Mobile Bottom Sheet**:
+  - Desktop: Slide-out translucent telemetry sidebar with one-click toggle (`ExplorerHUD.tsx`).
+  - Mobile: Native swipable bottom sheet drawer (`MobileInspectorDrawer.tsx` via `vaul`) providing instant celestial target switching and telemetry inspector without blocking 3D touch gestures.
+- **Cinematic Zen Mode**: Implemented distraction-free viewing toggle (hotkeys: `Z` / `Esc`) and gesture hints with auto-fade timer.
+- **Header-Integrated Feedback Portal**: Relocated floating feedback widget from bottom canvas into header navigation bar.
+
 ## [v1.3.0] - 2026-08-19
 
 ### 🚀 Added

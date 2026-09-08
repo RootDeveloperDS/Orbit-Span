@@ -47,17 +47,18 @@ export function TimeControls() {
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Playback speed">
+      <div className="grid grid-cols-6 gap-1" role="group" aria-label="Playback speed">
         {PLAYBACK_RATES.map((rate) => (
           <Button
             key={rate.label}
             size="sm"
             variant={playbackRate === rate.value ? "default" : "outline"}
-            className="h-7 px-2 font-mono text-[11px]"
+            className="h-7 px-1 font-mono text-[10px]"
             aria-pressed={playbackRate === rate.value}
             onClick={() => setPlaybackRate(rate.value)}
+            title={`Speed: ${rate.label}`}
           >
-            {rate.value === 0 ? <Pause className="h-3 w-3" /> : rate.label}
+            {rate.value === 0 ? <Pause className="h-3 w-3" /> : rate.label.replace("/s", "")}
           </Button>
         ))}
       </div>
